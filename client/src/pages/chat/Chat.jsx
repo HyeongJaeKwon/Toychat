@@ -15,12 +15,12 @@ const Chat = ({ user }) => {
   const navigate = useNavigate();
   console.log(messageList)
 
-  //   const {data, loading, error } = useFetch(`http://localhost:5001/api/v1/chats/${id}`)
+  //   const {data, loading, error } = useFetch(`/api/v1/chats/${id}`)
   //   console.log(data)
 
   useEffect(() => {
     /** load previous messages */
-    axios.get(`http://localhost:5001/api/v1/chats/${id}`).then((res) => {
+    axios.get(`/api/v1/chats/${id}`).then((res) => {
       setMessageList((prevMessageList) => [...res.data, ...prevMessageList]);
     });
 
@@ -32,7 +32,6 @@ const Chat = ({ user }) => {
       setMessageList((prevMessageList) =>
       prevMessageList.filter((message) => message._id !== res.chatid)
     );
-  
     });
 
     /** when new message comes */
@@ -63,17 +62,20 @@ const Chat = ({ user }) => {
     setMessage("");
   };
 
-  const leaveRoom = async () => {
-    socket.emit("leaveRoom", user, id, (res) => {
-      if (res.ok) navigate("/");
-    });
-  };
+  // const leaveRoom = async () => {
+  //   socket.emit("leaveRoom", user, id, (res) => {
+  //     if (res.ok) navigate("/");
+  //   });
+  // };
+  const back = async () => {
+    navigate("/")
+  }
 
   return (
     <div>
       <div className="cContainer">
         <nav>
-          <Button onClick={leaveRoom} className="backButton">
+          <Button onClick={back} className="backButton">
             X
           </Button>
           <div className="navUser">{user.name}</div>

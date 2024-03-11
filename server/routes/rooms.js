@@ -1,22 +1,34 @@
 import express from "express";
 import Room from "../models/room.js";
 import User from "../models/user.js";
+import roomController from "../controllers/room.js";
 
 const router = express.Router();
 
-//update
-router.post("/", async (req, res) => {
-  const u = await User.findOne({ name: "dd" });
 
-  await Room.insertMany([
-    { name: "First Chatroom", users: [u._id] },
-    { name: "Second Chatroom", users: [u._id] },
-    { name: "Third Chatroom", users: [u._id] },
-  ])
-    .then(() => {
-      res.json({ message: "Room has been created" });
-    })
-    .catch((err) => res.json(err));
+/** Create Room */
+router.post("/", async (req, res) => {
+  //req => user, other 
+  try{
+    const data = await roomController.createRoom(req.body.user, req.body.other);
+    //data => exist, room 
+    res.json(data)
+  }catch(err){
+    res.json(err);
+  }
+});
+
+/** delete room from user.rooms */
+router.delete("/", async (req, res) => {
+  //req => user, roomid
+  try{
+    console.log(req.body)
+    const updatedUser = await roomController.leaveRoom(req.body.user, req.body.roomid);
+
+    res.json(updatedUser)
+  }catch(err){
+    res.json(err);
+  }
 });
 
 export default router;

@@ -8,7 +8,7 @@ const MessageContainer = ({ messageList, setMessageList, rid, user }) => {
   const [menu, setMenu] = useState(false);
   const [menuId, setMenuId] = useState("");
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
-  console.log(menuId);
+
 
   const handleContextMenu = (event, chatid) => {
     event.preventDefault();
@@ -84,9 +84,9 @@ const MessageContainer = ({ messageList, setMessageList, rid, user }) => {
           style={{ top: menuPosition.y, left: menuPosition.x }}
         >
           <div className="contextMenuOption" onClick={handleDelete}>
-            Option 1
+            Delete
           </div>
-          <div className="contextMenuOption">Option 2</div>
+          <div className="contextMenuOption">Reply</div>
         </div>
       )}
     </>

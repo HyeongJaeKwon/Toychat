@@ -13,6 +13,7 @@ import { Server } from "socket.io";
 import io from "./utils/io.js";
 import roomsRoute from "./routes/rooms.js"
 import chatsRoute from "./routes/chats.js"
+import usersRoute from "./routes/users.js"
 
 const app = express();
 dotenv.config();
@@ -55,3 +56,4 @@ app.use(express.json())
 app.use(cors());
 app.use("/api/v1/rooms", roomsRoute);
 app.use("/api/v1/chats", chatsRoute);
+app.use("/api/v1/users", usersRoute);

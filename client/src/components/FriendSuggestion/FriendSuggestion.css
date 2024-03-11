@@ -1,0 +1,26 @@
+.fSidebar {
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+    overflow: hidden;
+    background-color: red;
+    height: 100%;
+}
+
+.fSideItem {
+    padding-left: 10px;
+    padding-right: 10px;
+    color: black;
+    background-color: gray;
+    height: 40px;
+    margin: 10px 10px;
+    align-items: center;
+    justify-content: start;
+    font-size: 20px;
+    overflow: hidden;
+    display: flex; 
+}
+
+.fUsername{
+    padding-right: 10px;
+}
