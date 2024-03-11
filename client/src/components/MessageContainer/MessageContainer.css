@@ -1,0 +1,97 @@
+.system-message-container {
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+}
+
+.system-message {
+  background-color: #55667758;
+  border-radius: 100px;
+  text-align: center;
+  color: white;
+  padding: 2px 15px;
+  font-size: 14px;
+}
+.my-message-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 5px;
+}
+.my-message {
+  background-color: #f7e600;
+  border-radius: 8px;
+  padding: 8px;
+  max-width: 200px;
+  font-size: 12px;
+}
+
+.your-message-container {
+  display: flex;
+  justify-content: flex-start;
+  /* margin-bottom: 5px; */
+  align-items: center;
+}
+.your-message {
+  background-color: white;
+  border-radius: 8px;
+  padding: 8px;
+  max-width: 200px;
+  font-size: 12px;
+}
+
+.profile-image {
+  width: 38px;
+  height: 38px;
+  border-radius: 100px;
+  margin-right: 10px;
+}
+
+.message-container-wrapper {
+  height:calc(100% - 100px); 
+  overflow-y: auto; 
+  padding: 0px 0px;
+
+
+  
+}
+
+.contextMenuOption:hover {
+  background: linear-gradient(to top, #555, #333);
+  color: white;
+}
+
+
+.contextMenuOption:active {
+  color: #e9e9e9;
+  background: linear-gradient(to top, #555, #444);
+}
+
+.contextMenu {
+  position: fixed;
+  background: white;
+  box-shadow: 0px 2px 10px #999999;
+}
+
+.contextMenuOption {
+  padding: 6px 50px 5px 10px;
+  min-width: 160px;
+  cursor: default;
+  font-size: 12px;
+  
+  
+  
+  /* &__disabled {
+      color: #999999;
+      pointer-events: none;
+  } */
+  
+  
+  /* &--separator {
+      width: 100%;
+      height: 1px;
+      background: #CCCCCC;
+      margin: 0 0 0 0;
+  } */
+}

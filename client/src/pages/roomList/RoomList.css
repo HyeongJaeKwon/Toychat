@@ -1,0 +1,42 @@
+.rContainer {
+    height: 100vh;
+    background-color: whitesmoke;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 28rem;
+    position: relative;
+}
+
+.rNav {
+    padding: 20px 10px;
+    background-color : white;
+}
+
+.rList {
+    display:flex;
+    align-items: center;
+    background-color: white;
+    padding: 10px;
+    justify-content: space-between;
+}
+
+.rList:hover {
+    background-color: whitesmoke;
+}
+
+.rList img {
+    width: 50px;
+    border-radius: 50px;
+    margin-right: 10px;
+}
+
+.rTitle {
+    display: flex;
+}
+
+.usersNumber {
+    color: white;
+    background-color: rgb(237,71,71);
+    border-radius: 50px;
+    padding: 3px 8px;
+}
