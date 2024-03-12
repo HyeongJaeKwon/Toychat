@@ -1,15 +1,31 @@
 import { useNavigate } from "react-router-dom";
 import "./RoomContainer.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch.js";
 import axios from "axios";
 import socket from "../../server";
 
-const RoomContainer = ({ user, setUser, roomList, setRoomList}) => {
+const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
   const navigate = useNavigate();
-  const [menu, setMenu] = useState(false);
-  const [menuId, setMenuId] = useState("");
-  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [roomList, setRoomList] = useState([]);
+  const index = 0;
+  console.log("roomlist:", roomList);
+
+  useEffect(() => {
+    socket.on("rooms", (res) => {
+      console.log("socket on rooms", res);
+      setRoomList(res);
+    });
+
+    if (user !== null) {
+      axios.get(`/api/v1/rooms/${user._id}`).then((res) => {
+        if (res.data) {
+          console.log("axios got rooms");
+          setRoomList(res.data);
+        }
+      });
+    }
+  }, [user]);
 
   const moveToChat = (rid) => {
     navigate(`/chat/${rid}`);
@@ -17,15 +33,18 @@ const RoomContainer = ({ user, setUser, roomList, setRoomList}) => {
 
   const handleContextMenu = (event, roomid) => {
     event.preventDefault();
-
-    setMenu(true);
-    setMenuId(roomid);
-    setMenuPosition({ x: event.clientX, y: event.clientY });
+    setMenuInfo({
+      isOpen: true,
+      mid: roomid,
+      mPosition: { x: event.clientX, y: event.clientY },
+      mType: "RoomContainer",
+    });
   };
 
   const handleClick = (e) => {
     e.preventDefault();
-    setMenu(false);
+    // setMenu(false);
+    setMenuInfo((prev) => ({ ...prev, isOpen: false }));
   };
 
   const handleDelete = (e) => {
@@ -33,65 +52,56 @@ const RoomContainer = ({ user, setUser, roomList, setRoomList}) => {
     console.log("delete this chat");
     const data = {
       user: user,
-      roomid: menuId,
+      roomid: menuInfo.mid,
     };
-    axios.delete("/api/v1/rooms", {data:data}).then((res) => {
+    axios.delete("/api/v1/rooms", { data: data }).then((res) => {
       console.log("delete res:", res);
-       setUser(res.data)
-       setRoomList((prev)=> prev.filter((room)=>room._id !== menuId))
-
+      setUser(res.data);
+      setRoomList((prev) => prev.filter((room) => room._id !== menuInfo.mid));
     });
-    // socket.emit("deleteChat", rid, menuId, (res) => {
-    //   if (!res.ok) alert(res.error);
-    //   else {
-    //     setMenu(false);
-    //   }
-    // });
   };
 
-  const handleChangeName = (e) => {
- 
-  };
-
+  const handleChangeName = (e) => {};
 
   return (
-    <div onClick={handleClick} onContextMenu={(e) => e.preventDefault()}>
-      {roomList.length > 0 ? (
-        <>
-          {roomList.map((room) => (
-            <div
-              className="rList"
-              key={room._id}
-              onClick={() => moveToChat(room._id)}
-              value={room._id}
-              onContextMenu={(e) => handleContextMenu(e, room._id.toString())}
-            >
-              <div className="rTitle">
+    <div className="rcContainer">
+      <div onClick={handleClick} onContextMenu={(e) => e.preventDefault()}>
+        {roomList.length > 0 ? (
+          <>
+            {roomList.map((room, ind) => (
+              <div
+                className={ind === index ? "rcSideItemSelected" : "rcSideItem"}
+                key={room._id}
+                onClick={() => moveToChat(room._id)}
+                onContextMenu={(e) => handleContextMenu(e, room._id.toString())}
+              >
                 <img src={"/profile.jpeg"} />
-                <p>{room.name}</p>
+                <div className="rcUsername">{room.name}</div>
+                <div className="usersNumber">{room.users.length}</div>
               </div>
-              <div className="usersNumber">{room.users.length}</div>
-            </div>
-          ))}
-        </>
-      ) : (
-        <div>No Chat</div>
-      )}
+            ))}
+          </>
+        ) : (
+          <div>No Chat</div>
+        )}
 
-      {menu && (
-        <div
-          className="contextMenu"
-          style={{ top: menuPosition.y, left: menuPosition.x }}
-        >
-          <div className="contextMenuOption" onClick={handleDelete}>
-            Delete
+        {menuInfo.isOpen && menuInfo.mType === "RoomContainer" && (
+          <div
+            className="contextMenu"
+            style={{ top: menuInfo.mPosition.y, left: menuInfo.mPosition.x }}
+          >
+            <div className="contextMenuOption" onClick={handleDelete}>
+              Delete
+            </div>
+            <div className="contextMenuOption" onClick={handleChangeName}>
+              Change Name
+            </div>
+            <div className="contextMenuOption" onClick={handleClick}>
+              Close
+            </div>
           </div>
-          <div className="contextMenuOption" onClick={handleChangeName}>Change Name</div>
-          <div className="contextMenuOption" onClick={handleClick}>
-            Close
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

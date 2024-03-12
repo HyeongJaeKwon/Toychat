@@ -1,26 +1,58 @@
-.fSidebar {
-    display: flex;
-    flex-direction: column;
-    width: 250px;
-    overflow: hidden;
-    background-color: red;
-    height: 100%;
+.fsSidebar {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  /* overflow: hidden; */
+  /* background-color: blue; */
+  /* height: 100%; */
+  /* padding: 0px 0px; */
 }
 
-.fSideItem {
-    padding-left: 10px;
-    padding-right: 10px;
-    color: black;
-    background-color: gray;
-    height: 40px;
-    margin: 10px 10px;
-    align-items: center;
-    justify-content: start;
-    font-size: 20px;
-    overflow: hidden;
-    display: flex; 
+.fsSideItem {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  padding: 5px;
+  justify-content: start;
+  border-radius: 5px;
+  margin: 1px 0px;
+  color: rgb(181, 181, 181);
+  cursor: pointer;
 }
 
-.fUsername{
-    padding-right: 10px;
+.fsSideItemSelected {
+  display: flex;
+  align-items: center;
+  background-color: rgb(96, 96, 96);
+  padding: 5px;
+  justify-content: start;
+  border-radius: 5px;
+  margin: 1px 0px;
+  color: whitesmoke;
+  cursor: pointer;
+
+}
+
+.fsSideItemSelected:hover {
+  background-color: rgb(88, 88, 88);
+}
+
+.fsSideItem:hover {
+  background-color: rgb(85, 85, 85);
+}
+
+.fsSideItem img {
+  width: 32px;
+  border-radius: 50px;
+  margin-right: 10px;
+}
+
+.fsSideItemSelected img {
+  width: 35px;
+  border-radius: 50px;
+  margin-right: 10px;
+}
+
+.fsUsername {
+  padding-right: 10px;
 }

@@ -4,6 +4,7 @@
     display: flex;
     width: 100%;
   }
+  
   .plus-button{
     background-color: lightslategray;
     width: 50px;

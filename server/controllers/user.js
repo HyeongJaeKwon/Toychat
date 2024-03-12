@@ -66,4 +66,32 @@ userController.getAllUsers = async () => {
   }
 };
 
+userController.addFriend = async (myuid, otheruid) => {
+  try{
+    const myuser = await User.findByIdAndUpdate(myuid, { $push: {friends: otheruid}},{new:true})
+    const otheruser = await User.findByIdAndUpdate(otheruid, { $push: {friends: myuid}},{new:true})
+    return {myuser, otheruser}
+
+  }catch(err){
+    throw err
+  }
+}
+
+userController.deleteFriend = async (myuid, otheruid) => {
+  try{
+    const myuser = await User.findByIdAndUpdate(myuid, { $pull: {friends: otheruid}},{new:true})
+    const otheruser = await User.findByIdAndUpdate(otheruid, { $pull: {friends: myuid}},{new:true})
+    return {myuser, otheruser}
+
+  }catch(err){
+    throw err
+  }
+}
+// data.user = await User.findByIdAndUpdate(
+//   user._id,
+//   { $push: { rooms: existingRoom._id } },
+//   { new: true }
+// );
+
+
 export default userController;

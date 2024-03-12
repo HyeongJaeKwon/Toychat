@@ -6,11 +6,17 @@ import room from "../models/room.js";
 const roomController = {};
 
 /**Create Room */
-roomController.createRoom = async (user, other) => {
+roomController.createRoom = async (user, otheruid) => {
   try {
+    const other = await User.findById(otheruid);
     const existingRoom = await Room.findOne({
-      users: { $all: [user._id, other._id] },
+      users: { $all: [user._id, otheruid] },
     });
+
+
+
+//ROOM DB ALREADY EXIST
+console.log("ROOM DB ALREADY EXIST")
     if (existingRoom) {
       const data = {
         exist: true,
@@ -18,11 +24,17 @@ roomController.createRoom = async (user, other) => {
         user: user,
       };
 
+      /**in case user.rooms does not exist.... */
       if (user.rooms === null) {
         user.rooms = [];
         data.user = await User.findByIdAndUpdate(user._id, user, { new: true });
       }
-      if (!user.rooms.some((each) => each === existingRoom._id.toString())) {
+
+
+  //USER.ROOMS DOESNT HAVE ROOM ID
+      if (!user.rooms.some((each) => each.toString() === existingRoom._id.toString())) {
+  console.log("USER.ROOMS DOESNT HAVE ROOM ID")
+
         data.user = await User.findByIdAndUpdate(
           user._id,
           { $push: { rooms: existingRoom._id } },
@@ -30,21 +42,33 @@ roomController.createRoom = async (user, other) => {
         );
         data.added = true;
       } else {
+
+  //USER.ROOMS ALREADY HAVE ROOM ID
+  console.log("USER.ROOMS ALREADY HAVE ROOM ID")
         data.added = false;
       }
+
       return data;
     } else {
+//ROOM DB DOESNT EXIST
+console.log("ROOM DB DOESNT EXIST")
+
+      //make new ROOM DB
       const room = new Room({
         name: user.name + " & " + other.name,
         users: [user._id, other._id],
       });
       await room.save();
+
+      //USER.ROOMS UPDATE
+      console.log("USER.ROOMS UPDATE")
       const updatedUser = await User.findByIdAndUpdate(
         user._id,
         { $push: { rooms: room._id } },
         { new: true }
       );
-      await User.findByIdAndUpdate(other._id, { $push: { rooms: room._id } });
+
+            // await User.findByIdAndUpdate(other._id, { $push: { rooms: room._id } });
 
       const data = {
         exist: false,
@@ -78,11 +102,11 @@ roomController.getAllRoomsByUserId = async (uid) => {
 
 /** Get room (rid) */
 roomController.getRoom = async (rid) => {
-  try{
+  try {
     const room = await Room.findById(rid);
     return room;
-  }catch(err){
-    throw err
+  } catch (err) {
+    throw err;
   }
 };
 

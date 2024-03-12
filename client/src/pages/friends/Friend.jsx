@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "./Test.css";
+import "./Friend.css";
 import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch.js";
 import axios from "axios";
@@ -11,9 +11,8 @@ import { FaUserFriends } from "react-icons/fa";
 import { GiSpeedBoat } from "react-icons/gi";
 import { AiFillShop } from "react-icons/ai";
 import Sidebar from "../../components/Sidebar/Sidebar";
-import RoomContainer from "../../components/RoomContainer/RoomContainer";
 
-const Test = ({ user, setUser}) => {
+const Friend = ({ user, setUser }) => {
   const [menuInfo, setMenuInfo] = useState({
     isOpen: false,
     mid: "",
@@ -21,25 +20,39 @@ const Test = ({ user, setUser}) => {
     mType: "",
   });
 
+  // const createRoom = (other) => {
+  //   const data = {
+  //     user: user,
+  //     other: other,
+  //   };
 
+  //   axios.post("/api/v1/rooms", data).then((res)=>{
+  //       if(!roomList.some((each)=>each._id === res.data.room._id)){
+  //           setRoomList(prev =>[res.data.room, ...prev])
+  //       }
+  //       setUser(res.data.user)
+  //   })
+  //   // socket.emit("createRoom", data, (res) => {});
+  // };
 
   return (
-    <div className="tContainer">
-      <Sidebar user={user} setUser={setUser} menuInfo={menuInfo} setMenuInfo={setMenuInfo} />
-      <div className="tMain">
-        {/* <RoomList
+    <div className="fContainer">
+      <Sidebar
+        user={user}
+        setUser={setUser}
+        menuInfo={menuInfo}
+        setMenuInfo={setMenuInfo}
+      />
+      <div className="fMain">
+        <FriendList
           user={user}
           setUser={setUser}
-          menuInfo={menuInfo} setMenuInfo={setMenuInfo}
-        /> */}
-          <RoomContainer
-          user={user}
-          setUser={setUser}
-          menuInfo={menuInfo} setMenuInfo={setMenuInfo}
+          menuInfo={menuInfo}
+          setMenuInfo={setMenuInfo}
         />
       </div>
     </div>
   );
 };
 
-export default Test;
+export default Friend;

@@ -9,7 +9,6 @@ const MessageContainer = ({ messageList, setMessageList, rid, user }) => {
   const [menuId, setMenuId] = useState("");
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 
-
   const handleContextMenu = (event, chatid) => {
     event.preventDefault();
 
@@ -43,22 +42,84 @@ const MessageContainer = ({ messageList, setMessageList, rid, user }) => {
       >
         {messageList.map((message, index) => {
           return (
-            <Container key={message._id} className="message-container">
+            <div key={message._id} className="message-container">
               {message.user.name === "system" ? (
                 <div className="system-message-container">
                   <p className="system-message">{message.chat}</p>
                 </div>
               ) : message.user.name === user.name ? (
-                <div className="my-message-container">
+                index === 0 ||
+                messageList[index - 1].user.name !== user.name ||
+                messageList[index - 1].user.name === "system" ? (
+                  <div className="bigMessage">
+                    <img
+                      src="/profile.jpeg"
+                      className="profile-image"
+                      style={{ visibility: "visible" }}
+                    />
+                    <div className="namechat">
+                      <div className="nametime">
+                        <div className="username">{message.user.name}</div>
+                        <div className="timestamp">
+                          {message.createdAt.toString()}
+                        </div>
+                      </div>
+                      <div
+                        className="message"
+                        onContextMenu={(e) => handleContextMenu(e, message._id)}
+                      >
+                        {message.chat}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="my-message-container">
+                    <img
+                      src="/profile.jpeg"
+                      className="profile-image"
+                      style={
+                        (index === 0
+                          ? { visibility: "visible" }
+                          : messageList[index - 1].user.name !== user.name) ||
+                        messageList[index - 1].user.name === "system"
+                          ? { visibility: "visible" }
+                          : { visibility: "hidden" }
+                      }
+                    />
+                    <div
+                      className="my-message"
+                      onContextMenu={(e) => handleContextMenu(e, message._id)}
+                    >
+                      {message.chat}
+                    </div>
+                  </div>
+                )
+              ) : (
+                index === 0 ||
+                messageList[index - 1].user.name == user.name ||
+                messageList[index - 1].user.name === "system" ?
+                <div className="bigMessage">
+                <img
+                  src="/profile.jpeg"
+                  className="profile-image"
+                  style={{ visibility: "visible" }}
+                />
+                <div className="namechat">
+                  <div className="nametime">
+                    <div className="username">{message.user.name}</div>
+                    <div className="timestamp">
+                      {message.createdAt.toString()}
+                    </div>
+                  </div>
                   <div
-                    className="my-message"
+                    className="message"
                     onContextMenu={(e) => handleContextMenu(e, message._id)}
                   >
                     {message.chat}
                   </div>
                 </div>
-              ) : (
-                <div className="your-message-container">
+              </div>
+             :   <div className="your-message-container">
                   <img
                     src="/profile.jpeg"
                     className="profile-image"
@@ -74,7 +135,7 @@ const MessageContainer = ({ messageList, setMessageList, rid, user }) => {
                   <div className="your-message">{message.chat}</div>
                 </div>
               )}
-            </Container>
+            </div>
           );
         })}
       </div>

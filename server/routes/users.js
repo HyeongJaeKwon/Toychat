@@ -17,6 +17,21 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/friends/:uid", async (req, res) => {
+  // req => params  == room id
+  try {
+    const user = await User.findById(req.params.uid);
+    const list = await Promise.all(user.friends.map(async (uid)=>{
+      const u = await User.findById(uid)
+      return u
+    }))
+
+    return res.json(list);
+  } catch (err) {
+    res.json({ error: err.message });
+  }
+});
+
 
 
 
