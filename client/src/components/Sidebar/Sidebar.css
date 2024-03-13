@@ -1,68 +1,65 @@
-
-.tLine{
-    height: 1px;
-    background-color: black;
-    width: 100%;
-    margin-bottom:5px;
+.tLine {
+  height: 1px;
+  background-color: black;
+  width: 100%;
+  margin-bottom: 5px;
 }
 
-.tSearch{
-    background-color: rgb(29, 29, 29);
-    color: rgb(181, 181, 181);
-    font-size:14px;
-    padding:5px 5px;
-    border-radius: 5px;
-    margin-top:10px;
-    margin-bottom:10px;
-    cursor: pointer;
-    margin-left: 10px;
-    margin-right:20px
+.tSearch {
+  background-color: rgb(29, 29, 29);
+  color: rgb(181, 181, 181);
+  font-size: 14px;
+  padding: 5px 5px;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  margin-left: 10px;
+  margin-right: 20px;
 }
 
 .tSidebar {
-    display: flex;
-    flex-direction: column;
-    width: 340px;
-    /* overflow: hidden; */
-    background-color: rgba(38, 38, 38, 0.944);
-    height: 100vh;
-    /* padding: 0px 10px; */
-    margin:0px 0px;
-    
+  display: flex;
+  flex-direction: column;
+  min-width: 240px;
+  /* overflow: hidden; */
+  background-color: rgba(38, 38, 38, 0.944);
+  height: 100vh;
+  /* padding: 0px 10px; */
+  margin: 0px 0px;
 }
 
-.tAdditionalMenus{
-    margin-bottom:10px;
+.tAdditionalMenus {
+  margin-bottom: 10px;
 }
 
-.tScrollPart{
-    overflow-y: scroll;
-     /* padding: 0px 15px; */
-     padding-left: 10px;
-     padding-right: 20apx;
-     overflow-x: hidden;
-
+.tScrollPart {
+  overflow-y: auto;
+  /* padding: 0px 15px; */
+  padding-left: 10px;
+  padding-right: 20px;
+  overflow-x: hidden;
 }
 /* .tScrollPart::-webkit-scrollbar-thumb{
     border-radius: 15px;
 } */
 
 .tDM {
-    color:rgb(181, 181, 181);
-    font-size: 12px;
-    padding: 5px 10px;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom:5px;
-    user-select: none;
+  color: rgb(181, 181, 181);
+  font-size: 12px;
+  padding: 5px 10px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  user-select: none;
 }
-.tDM:hover{
-    color: whitesmoke
+.tDM:hover {
+  color: whitesmoke;
 }
 
 .tIcon {
-    margin: 7px 0px;
-    width: 36px;
-    border-radius: 50px;
-    margin-right: 10px;
+  margin: 7px 0px;
+  width: 36px;
+  border-radius: 50px;
+  margin-right: 10px;
 }

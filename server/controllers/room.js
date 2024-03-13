@@ -8,11 +8,12 @@ const roomController = {};
 /**Create Room */
 roomController.createRoom = async (user, otheruid) => {
   try {
+    console.log("Create Room STARTED!!!")
+    if (user._id.toString() === otheruid.toString() )throw new Error("Yourself Error")
     const other = await User.findById(otheruid);
     const existingRoom = await Room.findOne({
       users: { $all: [user._id, otheruid] },
     });
-
 
 
 //ROOM DB ALREADY EXIST
@@ -84,7 +85,7 @@ console.log("ROOM DB DOESNT EXIST")
   }
 };
 
-/** Get rooms (uid) */
+/** Get rooms (uid) AND OTHER*/
 roomController.getAllRoomsByUserId = async (uid) => {
   try {
     const user = await User.findById(uid);
@@ -94,7 +95,24 @@ roomController.getAllRoomsByUserId = async (uid) => {
         return room;
       })
     );
-    return roomList;
+
+    const otherList =  await Promise.all(roomList.map(async (room)=>{
+      const otheruid = room.users[0].toString() === uid ? room.users[1] : room.users[0]
+      const other = await User.findById(otheruid)
+      if( !other){
+        return {_id: null }
+      }else{
+        return other
+      }
+    }))
+
+    const data = roomList.map((each,index)=>{
+      return {room:each, other: otherList[index]}
+    })
+
+   
+
+    return data;
   } catch (err) {
     throw err;
   }

@@ -5,37 +5,39 @@ import useFetch from "../../hooks/useFetch.js";
 import axios from "axios";
 import socket from "../../server";
 import RoomContainer from "../../components/RoomContainer/RoomContainer";
+import FriendSuggestion from "../FriendSuggestion/FriendSuggestion";
 
-const FriendList = ({ user, setUser, menuInfo, setMenuInfo }) => {
+const FriendList = ({  menuInfo, setMenuInfo, friendList, type }) => {
   //   const { data, loading, error } = useFetch("/api/v1/users");
   //   const [userList, setUserList] = useState(null)
-  const [friendList, setFriendList] = useState([]);
+  // const [friendList, setFriendList] = useState([]);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user !== null) {
-      axios.get(`/api/v1/users/friends/${user._id}`).then((res) => {
-        console.log("freindlist", res.data);
-        setFriendList(res.data);
-      });
-    }
+  // useEffect(() => {
+  //   if (user !== null) {
+  //     axios.get(`/api/v1/users/friends/${user._id}`).then((res) => {
+  //       console.log("freindlist", res.data);
+  //       setFriendList(res.data);
+  //     });
+  //   }
 
-    socket.on("online", (res) => {
-      console.log("FriendList refresh");
-      setFriendList((prev) =>
-        prev.filter((each) => {
-          if (each._id === res._id) {
-            each.online = res.online;
-            each.token = res.token;
-          }
-          return true;
-        })
-      );
-    });
-  }, [user]);
+  //   socket.on("online", (res) => {
+  //     console.log("FriendList refresh");
+  //     setFriendList((prev) =>
+  //       prev.filter((each) => {
+  //         if (each._id === res._id) {
+  //           each.online = res.online;
+  //           each.token = res.token;
+  //         }
+  //         return true;
+  //       })
+  //     );
+  //   });
+  // }, [user]);
 
-  const createRoom = (uid) => {
+  const createRoom = () => {
     const data = {
-      otheruid: uid,
+      otheruid: menuInfo.mid,
     };
 
     // axios.post("/api/v1/rooms", data).then((res) => {
@@ -44,15 +46,15 @@ const FriendList = ({ user, setUser, menuInfo, setMenuInfo }) => {
     //   }
     //   setUser(res.data.user);
     // });
-    socket.emit("createRoom", data, (res) => {
-      if(!res.ok){
-        console.log("CREATE ROOM FAILED: ", res.error)
-      }
 
+    socket.emit("createRoom", data, (res) => {
+      if (!res.ok) {
+        console.log("CREATE ROOM FAILED: ", res.error);
+      } else {
+        navigate(`/chat/${res.room._id.toString()}`)
+      }
     });
     setMenuInfo((prev) => ({ ...prev, isOpen: false }));
-
-    
   };
 
   const handleContextMenu = (event, uid) => {
@@ -85,41 +87,63 @@ const FriendList = ({ user, setUser, menuInfo, setMenuInfo }) => {
   };
 
   return (
-    <div className="flSidebar">
-      {friendList.length === 0
-        ? "Add New Friend"
-        : friendList.map((each) => {
-            return (
-              <div
-                className="flSideItem"
-                onContextMenu={(e) => handleContextMenu(e, each._id)}
-                onClick={handleClick}
-              >
-                <div className="flUsername">{each.name}</div>
-                <div className="flUserStatus">{each.online.toString()}</div>
-              </div>
-            );
-          })}
+    <div className="flContainer">
+      <div className="flSearch">Search</div>
+      <div className="flOnline">ALL FRIENDS - {friendList.length}</div>
+      <div className="flLine"></div>
+      <div className="flScroll">
+      <div className="flFriend">
+        {friendList.length === 0
+          ? "Add New Friend"
+          : friendList.map((each) => {
+              return (
+                <div
+                  className="flSideItem"
+                  onContextMenu={(e) => handleContextMenu(e, each._id)}
+                  onClick={handleClick}
+                >
+                  <div className="flSideProfile">
+                    <div className="flProfile">
+                      <div className="img">
+                        <img src={"/profile.jpeg"}></img>
+                        <div
+                          className={each.online ? "flStatusOn" : "flStatusOff"}
+                        />
+                      </div>
+                    </div>
+                    <div className="flNamestatus">
+                      <div className="flUsername">{each.name}</div>
+                      <div className="flStatus">
+                        {each.online ? "Online" : "Offline"}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flFlag">
+                    <div className="flMessage"></div>
+                    <div className="flMore"></div>
+                  </div>
+                </div>
+              );
+            })}
 
-      {menuInfo.isOpen && menuInfo.mType === "FriendList" && (
-        <div
-          className="contextMenu"
-          style={{ top: menuInfo.mPosition.y, left: menuInfo.mPosition.x }}
-        >
-          <div className="contextMenuOption" onClick={DeleteFriend}>
-            Delete Friend
-          </div>
+        {menuInfo.isOpen && menuInfo.mType === "FriendList" && (
           <div
-            className="contextMenuOption"
-            onClick={() => createRoom(menuInfo.mid)}
+            className="contextMenu"
+            style={{ top: menuInfo.mPosition.y, left: menuInfo.mPosition.x }}
           >
-            Send Message
+            <div className="contextMenuOption" onClick={DeleteFriend}>
+              Delete Friend
+            </div>
+            <div className="contextMenuOption" onClick={createRoom}>
+              Send Message
+            </div>
+            <div className="contextMenuOption" onClick={handleClick}>
+              Close
+            </div>
           </div>
-          <div className="contextMenuOption" onClick={handleClick}>
-            Close
-          </div>
-        </div>
-      )}
+        )}
+      </div>
+      </div>
     </div>
   );
 };

@@ -1,13 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./MessageContainer.css";
 import { Container } from "@mui/system";
 import axios from "axios";
 import socket from "../../server";
+import ChatProfile from "../ChatProfile/ChatProfile";
 
-const MessageContainer = ({ messageList, setMessageList, rid, user }) => {
+const MessageContainer = ({ messageList, setMessageList, rid, user, other }) => {
   const [menu, setMenu] = useState(false);
   const [menuId, setMenuId] = useState("");
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [style, setStyle] = useState("");
+
+
+
+  console.log(style);
 
   const handleContextMenu = (event, chatid) => {
     event.preventDefault();
@@ -40,6 +46,8 @@ const MessageContainer = ({ messageList, setMessageList, rid, user }) => {
         onClick={handleClick}
         onContextMenu={(e) => e.preventDefault()}
       >
+           <ChatProfile myuser={user} other={other}/>
+       
         {messageList.map((message, index) => {
           return (
             <div key={message._id} className="message-container">
@@ -51,7 +59,7 @@ const MessageContainer = ({ messageList, setMessageList, rid, user }) => {
                 index === 0 ||
                 messageList[index - 1].user.name !== user.name ||
                 messageList[index - 1].user.name === "system" ? (
-                  <div className="bigMessage">
+                  <div className="bigMessage" onContextMenu={(e) => handleContextMenu(e, message._id)}>
                     <img
                       src="/profile.jpeg"
                       className="profile-image"
@@ -61,83 +69,114 @@ const MessageContainer = ({ messageList, setMessageList, rid, user }) => {
                       <div className="nametime">
                         <div className="username">{message.user.name}</div>
                         <div className="timestamp">
-                          {message.createdAt.toString()}
+                          {new Date(message.createdAt).toLocaleDateString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          })}
                         </div>
                       </div>
                       <div
                         className="message"
-                        onContextMenu={(e) => handleContextMenu(e, message._id)}
+                        
                       >
                         {message.chat}
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="my-message-container">
-                    <img
-                      src="/profile.jpeg"
-                      className="profile-image"
+                  <div
+                    className="my-message-container"
+                    onMouseEnter={() => {
+                      setStyle(message._id);
+                    }}
+                    onMouseLeave={(e) => {
+                      setStyle("");
+                    }}
+                    onContextMenu={(e) => handleContextMenu(e, message._id)}
+                  >
+                    <div
+                      className="timestamp2"
                       style={
-                        (index === 0
-                          ? { visibility: "visible" }
-                          : messageList[index - 1].user.name !== user.name) ||
-                        messageList[index - 1].user.name === "system"
+                        style === message._id
                           ? { visibility: "visible" }
                           : { visibility: "hidden" }
                       }
-                    />
+                    >
+                      {new Date(message.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </div>
+
                     <div
                       className="my-message"
-                      onContextMenu={(e) => handleContextMenu(e, message._id)}
+                  
                     >
                       {message.chat}
                     </div>
                   </div>
                 )
-              ) : (
-                index === 0 ||
+              ) : index === 0 ||
                 messageList[index - 1].user.name == user.name ||
-                messageList[index - 1].user.name === "system" ?
-                <div className="bigMessage">
-                <img
-                  src="/profile.jpeg"
-                  className="profile-image"
-                  style={{ visibility: "visible" }}
-                />
-                <div className="namechat">
-                  <div className="nametime">
-                    <div className="username">{message.user.name}</div>
-                    <div className="timestamp">
-                      {message.createdAt.toString()}
-                    </div>
-                  </div>
-                  <div
-                    className="message"
-                    onContextMenu={(e) => handleContextMenu(e, message._id)}
-                  >
-                    {message.chat}
-                  </div>
-                </div>
-              </div>
-             :   <div className="your-message-container">
+                messageList[index - 1].user.name === "system" ? (
+                <div className="bigMessage"     onContextMenu={(e) => handleContextMenu(e, message._id)}>
                   <img
                     src="/profile.jpeg"
                     className="profile-image"
+                    style={{ visibility: "visible" }}
+                  />
+                  <div className="namechat">
+                    <div className="nametime">
+                      <div className="username">{message.user.name}</div>
+                      <div className="timestamp">
+                        {new Date(message.createdAt).toLocaleDateString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}
+                      </div>
+                    </div>
+                    <div
+                      className="message"
+                  
+                    >
+                      {message.chat}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className="your-message-container"
+                  onMouseEnter={() => {
+                    setStyle(message._id);
+                  }}
+                  onMouseLeave={(e) => {
+                    setStyle("");
+                  }}
+                >
+                  <div
+                    className="timestamp2"
                     style={
-                      (index === 0
-                        ? { visibility: "visible" }
-                        : messageList[index - 1].user.name === user.name) ||
-                      messageList[index - 1].user.name === "system"
+                      style === message._id
                         ? { visibility: "visible" }
                         : { visibility: "hidden" }
                     }
-                  />
+                  >
+                    {new Date(message.createdAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}
+                  </div>
                   <div className="your-message">{message.chat}</div>
                 </div>
               )}
             </div>
           );
         })}
+        <div className="mcEmpty"></div>
       </div>
       {menu && (
         <div

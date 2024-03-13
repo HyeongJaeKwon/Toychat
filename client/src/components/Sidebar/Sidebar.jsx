@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch.js";
 import axios from "axios";
 import socket from "../../server";
-import RoomList from "../../pages/roomList/RoomList";
 import FriendSuggestion from "../FriendSuggestion/FriendSuggestion";
 import { FaUserFriends } from "react-icons/fa";
 import { GiSpeedBoat } from "react-icons/gi";
@@ -50,7 +49,7 @@ const Sidebar = ({ user, setUser, menuInfo, setMenuInfo, }) => {
   }
 
   const arr = [
-    { title: "Friends", icon: <FaUserFriends className="tIcon"/>, address:"friends" },
+    { title: "Friends", icon: <FaUserFriends className="tIcon"/>, address:"" },
     { title: "Nitro", icon: <GiSpeedBoat className="tIcon" /> , address:"nitro"},
     { title: "Shop", icon: <AiFillShop className="tIcon" /> , address:"shop"},
   ];
@@ -79,13 +78,10 @@ const Sidebar = ({ user, setUser, menuInfo, setMenuInfo, }) => {
           <div>DIRECT MESSAGES</div>
           <div>+</div>
         </div>
-        <FriendSuggestion menuInfo={menuInfo} setMenuInfo={setMenuInfo} />
         <RoomContainer
           user={user}
           setUser={setUser}
           menuInfo={menuInfo} setMenuInfo={setMenuInfo}/>
-        {/* <FriendList menuInfo = {menuInfo}
-       setMenuInfo = {setMenuInfo} friendList={friendList} /> */}
       </div>
     </div>
   );

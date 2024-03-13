@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch.js";
 import axios from "axios";
 import socket from "../../server";
-import RoomList from "../roomList/RoomList";
 import FriendSuggestion from "../../components/FriendSuggestion/FriendSuggestion";
 import FriendList from "../../components/FriendList/FriendList";
 import { FaUserFriends } from "react-icons/fa";
 import { GiSpeedBoat } from "react-icons/gi";
 import { AiFillShop } from "react-icons/ai";
 import Sidebar from "../../components/Sidebar/Sidebar";
+import FriendManagement from "./FriendManagement/FriendManagement";
 
 const Friend = ({ user, setUser }) => {
   const [menuInfo, setMenuInfo] = useState({
@@ -44,12 +44,11 @@ const Friend = ({ user, setUser }) => {
         setMenuInfo={setMenuInfo}
       />
       <div className="fMain">
-        <FriendList
-          user={user}
+      
+        <FriendManagement user={user}
           setUser={setUser}
           menuInfo={menuInfo}
-          setMenuInfo={setMenuInfo}
-        />
+          setMenuInfo={setMenuInfo}/>
       </div>
     </div>
   );

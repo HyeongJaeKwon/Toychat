@@ -3,12 +3,15 @@
   height:calc(100% - 50px); 
   overflow-y: auto; 
   padding: 0px 0px;
+  /* padding-bottom: 20px; */
 /* background-color: red; */
 }
 .message-container{
   /* padding-left:30px; */
 }
-
+.mcEmpty{
+  height: 33px;
+}
 
 
 
@@ -19,6 +22,7 @@
   padding-top: 5px;
   padding-bottom: 5px;
   padding-left:30px;
+  margin-top:15px;
 }
 .bigMessage:hover{
   background-color: #322b2b58;
@@ -48,7 +52,22 @@
   height: fit-content;
   padding: 0;
   /* margin: 0; */
+  /* background-color: red; */
+  
 }
+
+.timestamp2{
+  color:rgb(186, 186, 186);
+  font-size: 11px;
+margin-right:10px;
+  /* margin-top:auto;
+  margin-bottom: auto; */
+  height: fit-content;
+  padding: 0;
+  /* margin: 0; */
+  /* background-color: red; */
+}
+
 .username{
   color:white;
   font-size: 17px;
@@ -143,6 +162,9 @@
   margin-right: 17px;
   margin-top:auto;
   margin-bottom: auto;
+  background-color: red;
+  align-content: center;
+  justify-content: center;
 }
 
 

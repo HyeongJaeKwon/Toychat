@@ -1,7 +1,7 @@
 .rcContainer {
   display: flex;
   flex-direction: column;
-  width: 200px;
+  /* width: 200px; */
   /* overflow: hidden; */
   /* background-color: blue; */
   /* height: 100%; */
@@ -41,6 +41,14 @@
   background-color: rgb(85, 85, 85);
 }
 
+.img {
+  width: 32px;
+  border-radius: 50px;
+  /* margin-right: 10px; */
+  /* position: relative; */
+  /* background-color: purple; */
+}
+
 .rcSideItem img {
   width: 32px;
   border-radius: 50px;
@@ -51,6 +59,32 @@
   width: 32px;
   border-radius: 50px;
   margin-right: 10px;
+}
+
+.rcProfile{
+  /* background-color: red; */
+  width: 32px;
+  position: relative;
+  margin-right: 10px;
+}
+
+.rcStatusOn{
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: green;
+  position: absolute;
+  bottom: 0px; /* Move the rectangle up by half its height */
+  right: 0px; 
+}
+.rcStatusOff{
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: black;
+  position: absolute;
+  bottom: 0px; /* Move the rectangle up by half its height */
+  right: 0px; 
 }
 
 .rcUsername {

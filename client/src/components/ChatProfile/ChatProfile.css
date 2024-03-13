@@ -1,0 +1,66 @@
+
+
+
+
+
+.cpContainer{
+    
+    padding-top:40px;
+    padding-left:30px;
+}
+
+
+.cpImage{
+    width: 80px;
+    height: 80px;
+    border-radius: 50px;
+}
+.cpName{
+    font-weight: 500;
+    color:white;
+    font-size: 35px;
+    margin: 10px 0px;
+}
+.cpThis{
+    color:whitesmoke;
+    font-size: 17px;
+    font-weight: 300;
+    margin-top:20px;
+
+}
+
+.cpButtonRow{
+    display: flex;
+    align-items: center;
+    /* justify-content: center; */
+    margin: 8px 0px
+}
+.cpButtonRow button{
+    padding: 3px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left:6px;
+    color:whitesmoke;
+    border: none;
+}
+
+.cpCommonServer{
+    color:whitesmoke;
+    text-align: center;
+    font-weight: 200;
+    font-size: 14px;
+}
+.cpDot{
+    width: 3px;
+    height: 3px;
+    background-color: gray;
+    margin-left: 15px;
+    margin-right: 15px;
+    border-radius: 20px;
+}
+.cpAddFriend{
+    background-color: rgb(54, 54, 113)
+}
+.cpBlock{
+    background-color:rgb(98, 96, 96)
+}

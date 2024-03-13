@@ -1,27 +1,45 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./RoomContainer.css";
 import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch.js";
 import axios from "axios";
 import socket from "../../server";
 
+
 const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
   const navigate = useNavigate();
-  const [roomList, setRoomList] = useState([]);
-  const index = 0;
-  console.log("roomlist:", roomList);
+  const [roomDataList, setRoomDataList] = useState([]);
+ 
+  console.log("roomDatalist:", roomDataList);
+  const location = useLocation();
+  const roomid = location.pathname.split("/")[2];
 
   useEffect(() => {
     socket.on("rooms", (res) => {
       console.log("socket on rooms", res);
-      setRoomList(res);
+      setRoomDataList(res);
     });
+
+    socket.on("online", (res) => {
+      console.log("RoomDataList Adjust");
+      setRoomDataList((prev) =>
+        prev.filter((each) => {
+          if (each.other._id === res._id) {
+            each.other.online = res.online;
+            each.other.token = res.token;
+          }
+          return true;
+        })
+      );
+    });
+  
 
     if (user !== null) {
       axios.get(`/api/v1/rooms/${user._id}`).then((res) => {
         if (res.data) {
+          // res.data == [ {room: , other: },... ]
           console.log("axios got rooms");
-          setRoomList(res.data);
+          setRoomDataList(res.data);
         }
       });
     }
@@ -49,15 +67,15 @@ const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
 
   const handleDelete = (e) => {
     e.preventDefault();
-    console.log("delete this chat");
+    console.log("delete this room");
     const data = {
       user: user,
       roomid: menuInfo.mid,
     };
     axios.delete("/api/v1/rooms", { data: data }).then((res) => {
-      console.log("delete res:", res);
+      console.log("delete room res:", res);
       setUser(res.data);
-      setRoomList((prev) => prev.filter((room) => room._id !== menuInfo.mid));
+      setRoomDataList((prev) => prev.filter((room) => room.room._id !== menuInfo.mid));
     });
   };
 
@@ -66,18 +84,18 @@ const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
   return (
     <div className="rcContainer">
       <div onClick={handleClick} onContextMenu={(e) => e.preventDefault()}>
-        {roomList.length > 0 ? (
+        {roomDataList.length > 0 ? (
           <>
-            {roomList.map((room, ind) => (
+            {roomDataList.map((room, ind) => (
               <div
-                className={ind === index ? "rcSideItemSelected" : "rcSideItem"}
-                key={room._id}
-                onClick={() => moveToChat(room._id)}
-                onContextMenu={(e) => handleContextMenu(e, room._id.toString())}
+                className={room.room._id.toString() === roomid ? "rcSideItemSelected" : "rcSideItem"}
+                key={room.room._id}
+                onClick={() => moveToChat(room.room._id)}
+                onContextMenu={(e) => handleContextMenu(e, room.room._id.toString())}
               >
-                <img src={"/profile.jpeg"} />
-                <div className="rcUsername">{room.name}</div>
-                <div className="usersNumber">{room.users.length}</div>
+                <div className="rcProfile"><div className="img"><img src={"/profile.jpeg"}></img><div className={room.other.online ? "rcStatusOn" : "rcStatusOff"}/></div></div>
+                <div className="rcUsername">{room.other.name}</div>
+                {/* <div className="usersNumber">{room.other.online.toString()}</div> */}
               </div>
             ))}
           </>

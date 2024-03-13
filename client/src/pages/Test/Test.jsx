@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch.js";
 import axios from "axios";
 import socket from "../../server";
-import RoomList from "../roomList/RoomList";
 import FriendSuggestion from "../../components/FriendSuggestion/FriendSuggestion";
 import FriendList from "../../components/FriendList/FriendList";
 import { FaUserFriends } from "react-icons/fa";
@@ -13,7 +12,7 @@ import { AiFillShop } from "react-icons/ai";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import RoomContainer from "../../components/RoomContainer/RoomContainer";
 
-const Test = ({ user, setUser}) => {
+const Test = ({ user, setUser }) => {
   const [menuInfo, setMenuInfo] = useState({
     isOpen: false,
     mid: "",
@@ -21,21 +20,20 @@ const Test = ({ user, setUser}) => {
     mType: "",
   });
 
-
-
   return (
     <div className="tContainer">
-      <Sidebar user={user} setUser={setUser} menuInfo={menuInfo} setMenuInfo={setMenuInfo} />
+      <Sidebar
+        user={user}
+        setUser={setUser}
+        menuInfo={menuInfo}
+        setMenuInfo={setMenuInfo}
+      />
       <div className="tMain">
-        {/* <RoomList
+        <RoomContainer
           user={user}
           setUser={setUser}
-          menuInfo={menuInfo} setMenuInfo={setMenuInfo}
-        /> */}
-          <RoomContainer
-          user={user}
-          setUser={setUser}
-          menuInfo={menuInfo} setMenuInfo={setMenuInfo}
+          menuInfo={menuInfo}
+          setMenuInfo={setMenuInfo}
         />
       </div>
     </div>

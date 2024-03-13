@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
-import InputField from "../InputField/InputField.jsx";
-import MessageContainer from "../MessageContainer/MessageContainer.js";
-import socket from "../../server.js";
+import InputField from "../../../components/InputField/InputField.jsx";
+import MessageContainer from "../../../components/MessageContainer/MessageContainer.js";
+import socket from "../../../server.js";
 import "./Chat.css";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/base/Button";
 import axios from "axios";
-import useFetch from "../../hooks/useFetch.js";
+import useFetch from "../../../hooks/useFetch.js";
+import ChatProfile from "../../../components/ChatProfile/ChatProfile.jsx";
 
 const Chat = ({ user, id }) => {
   const [message, setMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
   const navigate = useNavigate();
+  const [ other, setOther] = useState(null);
   console.log("messageList:", messageList);
 
   //   const {data, loading, error } = useFetch(`/api/v1/chats/${id}`)
@@ -25,6 +27,13 @@ const Chat = ({ user, id }) => {
     axios.get(`/api/v1/chats/${id}`).then((res) => {
       setMessageList((prevMessageList) => [...res.data, ...prevMessageList]);
     });
+
+    if( user !== null){
+      axios.get(`/api/v1/rooms/roomid/${id}/${user._id}`).then((res)=>{
+        // res.data => room + other
+        setOther(res.data.other)
+      })
+    }
 
     /** when message got deleted */
     socket.on("deleteMessage", (res) => {
@@ -79,11 +88,13 @@ const Chat = ({ user, id }) => {
         "Loading"
       ) : (
         <div className="cContainer">
+
           <MessageContainer
             messageList={messageList}
             setMessageList={setMessageList}
             rid={id}
             user={user}
+            other = {other}
           />
           <InputField
             message={message}

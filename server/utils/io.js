@@ -37,6 +37,7 @@ export default function (io) {
         // );
 
         io.emit("online", user); //temp
+        //Let's just only tell Friends.............. 
 
         callback({ ok: true, data: user });
       } catch (err) {
@@ -149,6 +150,7 @@ export default function (io) {
       } catch (err) {
         console.log("-!!!!!!!!!!!");
         callback({ ok: false, error: err });
+
       }
     });
 
@@ -162,7 +164,7 @@ export default function (io) {
     //       user: { id: null, name: "system" },
     //     };
     //     socket.broadcast.to(id).emit("message", leaveMessage);
-    //     io.to(socket.id).emit("rooms", await roomController.getAllRooms());
+    //     io.to(socket.id).emit("ro  oms", await roomController.getAllRooms());
     //     socket.leave(id);
     //     callback({ ok: true });
     //   } catch (err) {
@@ -172,14 +174,19 @@ export default function (io) {
 
     //  /** a user created new room with other user BUT NO NEED TO EMIT. JUST ROUTES*/
     socket.on("createRoom", async (data, callback) => {
-      const otheruid = data.otheruid;
+      try{
+        const otheruid = data.otheruid;
       const user = await userController.checkUser(socket.id);
       const room = await roomController.createRoom(user, otheruid);
-      console.log("CREATE ROOM ended:")
+      console.log("CREATE ROOM ended:");
 
       if (room) {
         if (!room.added) {
-          callback({ ok: false, error: "You already have the room" });
+          callback({
+            ok: true,
+            error: "You already have the room on the list",
+            room: room.room,
+          });
         } else {
           console.log("create room emit good");
           // io.to(other.token).emit("rooms", await roomController.getAllRoomsByUserId(other._id))
@@ -188,10 +195,24 @@ export default function (io) {
             await roomController.getAllRoomsByUserId(user._id)
           );
           socket.emit("myuser", room.user);
-          callback({ ok: true, error: "You already have the room" });
+
+          //It can be 1. you have roomDB, but not on the list
+          //          2. No room DB at all
+          if (room.exist) {
+            callback({
+              ok: true,
+              error: "You already have the roomDB",
+              room: room.room,
+            });
+          } else {
+            callback({ ok: true, error: "ROOM CREATED!!!", room: room.room });
+          }
         }
       } else {
         callback({ ok: false, error: "??what error" });
+      }
+      }catch(err){
+        callback({ok:false, error: err.message})
       }
     });
 

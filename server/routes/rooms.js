@@ -2,6 +2,7 @@ import express from "express";
 import Room from "../models/room.js";
 import User from "../models/user.js";
 import roomController from "../controllers/room.js";
+import userController from "../controllers/user.js";
 
 const router = express.Router();
 
@@ -21,9 +22,29 @@ router.post("/", async (req, res) => {
 router.get("/:uid", async (req, res)=>{
   try{
 
-    const list = await roomController.getAllRoomsByUserId(req.params.uid);
-    res.json(list);
+    const data = await roomController.getAllRoomsByUserId(req.params.uid);
+    // data => [{ room, other}, ... ]
+    console.log("get all rooms by user id DATA => room, other")
+    res.json(data);
 
+  }
+  catch(err){
+    res.json(err)
+  }
+})
+
+router.get("/roomid/:rid/:uid", async (req, res)=>{
+  try{
+
+    const room = await roomController.getRoom(req.params.rid);
+    const otheruid = room.users[0].toString() === req.params.uid ? room.users[1].toString() : room.users[0].toString()
+    const other = await User.findById(otheruid);
+    const data = {
+      room:room,
+      other:other
+    }
+
+    res.json(data)
   }
   catch(err){
     res.json(err)

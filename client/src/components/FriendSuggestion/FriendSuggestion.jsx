@@ -6,10 +6,30 @@ import axios from "axios";
 import socket from "../../server";
 import RoomContainer from "../../components/RoomContainer/RoomContainer";
 
-const FriendSuggestion = ({ menuInfo, setMenuInfo }) => {
+const FriendSuggestion = ({ menuInfo, setMenuInfo, type }) => {
   //   const { data, loading, error } = useFetch("/api/v1/users");
   const [userList, setUserList] = useState([]);
   const index = 0;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // socket.on("online", (res) => {
+    //   setUserList((prev) =>
+    //     prev.filter((each) => {
+    //       if (each._id === res._id) {
+    //         each.online = res.online;
+    //         each.token = res.token;
+    //       }
+    //       return true;
+    //     })
+    //   );
+    // });
+    /// ALL USER LIST WON"T GET UPDATED THROUGH SOCKET ANYMORE........
+
+    axios.get("/api/v1/users").then((res) => {
+      setUserList(res.data);
+    });
+  }, []);
 
   const handleContextMenu = (event, uid) => {
     event.preventDefault();
@@ -41,23 +61,25 @@ const FriendSuggestion = ({ menuInfo, setMenuInfo }) => {
     });
   };
 
-  useEffect(() => {
-    socket.on("online", (res) => {
-      setUserList((prev) =>
-        prev.filter((each) => {
-          if (each._id === res._id) {
-            each.online = res.online;
-            each.token = res.token;
-          }
-          return true;
-        })
-      );
-    });
+  const openChat = () => {
+    console.log("open chat")
+    setMenuInfo((prev) => ({ ...prev, isOpen: false }));
+    const data = {
+      otheruid: menuInfo.mid,
+    };
+    socket.emit("createRoom", data, (res) => {
+      if(!res.ok){
+        console.log("CREATE ROOM FAILED: ", res.error)
+      }else{
+        navigate(`/chat/${res.room._id.toString()}`)
+      }
+      
 
-    axios.get("/api/v1/users").then((res) => {
-      setUserList(res.data);
     });
-  }, []);
+    
+  }
+
+
 
   return (
     <div className="fsSidebar">
@@ -77,7 +99,7 @@ const FriendSuggestion = ({ menuInfo, setMenuInfo }) => {
             );
           })}
 
-      {menuInfo.isOpen && menuInfo.mType === "FriendSuggestion" && (
+      {menuInfo.isOpen && menuInfo.mType === "FriendSuggestion" &&  (
         <div
           className="contextMenu"
           style={{ top: menuInfo.mPosition.y, left: menuInfo.mPosition.x }}
@@ -85,9 +107,9 @@ const FriendSuggestion = ({ menuInfo, setMenuInfo }) => {
           <div className="contextMenuOption" onClick={AddFriend}>
             Add Friend
           </div>
-          {/* <div className="contextMenuOption">
-            Change Name
-          </div> */}
+          <div className="contextMenuOption" onClick={openChat}>
+            Send Message
+          </div>
           <div className="contextMenuOption" onClick={handleClick}>
             Close
           </div>

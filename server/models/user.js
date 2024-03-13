@@ -14,7 +14,8 @@ const UserSchema = new mongoose.Schema({
     default: false,
   },
   rooms: [{type:mongoose.Schema.ObjectId, ref:"Room"}],
-  friends: [{type:mongoose.Schema.ObjectId, ref:"User"}]
+  friends: [{type:mongoose.Schema.ObjectId, ref:"User"}],
+  blocked: [{type:mongoose.Schema.ObjectId, ref:"User"}],
 });
 
 
