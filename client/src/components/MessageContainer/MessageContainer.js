@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./MessageContainer.css";
 import { Container } from "@mui/system";
 import axios from "axios";
@@ -10,10 +10,18 @@ const MessageContainer = ({ messageList, setMessageList, rid, user, other }) => 
   const [menuId, setMenuId] = useState("");
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [style, setStyle] = useState("");
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messageList]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView();
+  };
 
 
-
-  console.log(style);
+  // console.log(style);
 
   const handleContextMenu = (event, chatid) => {
     event.preventDefault();
@@ -176,7 +184,7 @@ const MessageContainer = ({ messageList, setMessageList, rid, user, other }) => 
             </div>
           );
         })}
-        <div className="mcEmpty"></div>
+        <div className="mcEmpty" ref={messagesEndRef}></div>
       </div>
       {menu && (
         <div

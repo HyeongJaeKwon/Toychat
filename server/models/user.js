@@ -13,10 +13,12 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  rooms: [{type:mongoose.Schema.ObjectId, ref:"Room"}],
-  friends: [{type:mongoose.Schema.ObjectId, ref:"User"}],
-  blocked: [{type:mongoose.Schema.ObjectId, ref:"User"}],
+  rooms: [{ type: mongoose.Schema.ObjectId, ref: "Room" }],
+  friends: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
+  blocked: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
+  pending: [
+    { id: { type: mongoose.Schema.ObjectId, ref: "User" }, out: Boolean },
+  ],
 });
 
-
-export default mongoose.model("User", UserSchema)
+export default mongoose.model("User", UserSchema);

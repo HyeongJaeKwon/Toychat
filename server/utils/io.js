@@ -11,16 +11,27 @@ export default function (io) {
     socket.on("joinRoom", async (rid, callback) => {
       try {
         const whoJoined = await userController.checkUser(socket.id);
-        // await roomController.joinRoom(rid, whoJoined);
         socket.join(rid);
 
         const welcomeMessage = {
           chat: `${whoJoined.name} has joing the chat`,
-          user: { id: null, name: "system" },
+          user: { id: "join", name: "system" },
         };
+        socket.broadcast.to(rid).emit("message", welcomeMessage); //Just other guy
+        // io.in(rid).emit("message", welcomeMessage);  //Not everyone
 
-        io.in(rid).emit("message", welcomeMessage);
-        // io.emit("rooms", await roomController.getAllRooms());
+        console.log("Right BEFORE IO");
+        const sockets = await io.in(rid).fetchSockets();
+
+        console.log(`Number of clients in room ${rid}: ${sockets.length}`);
+        if (sockets.length > 1) {
+          const welcomeMessage = {
+            chat: `ALREADY in the chat`,
+            user: { id: "join", name: "system" },
+          };
+          socket.emit("message", welcomeMessage);
+        }
+
         callback({ ok: true });
       } catch (err) {
         callback({ ok: false, error: err.message });
@@ -37,7 +48,7 @@ export default function (io) {
         // );
 
         io.emit("online", user); //temp
-        //Let's just only tell Friends.............. 
+        //Let's just only tell Friends..............
 
         callback({ ok: true, data: user });
       } catch (err) {
@@ -102,8 +113,6 @@ export default function (io) {
     socket.on("addFriend", async (otheruid, callback) => {
       try {
         const u = await userController.checkUser(socket.id);
-
-        console.log(u._id, otheruid);
         if (
           otheruid.toString() === u._id.toString() ||
           u.friends.some((each) => {
@@ -112,16 +121,16 @@ export default function (io) {
         ) {
           callback({ ok: false, error: "you already friend" });
         } else {
-          const { myuser, otheruser } = await userController.addFriend(
+          await userController.addFriend(u._id.toString(), otheruid);
+          const { myuser, otheruser } = await userController.deletePending(
             u._id.toString(),
             otheruid
           );
 
           socket.emit("myuser", myuser);
-          console.log("-");
-          console.log("other token:", otheruser);
-          io.to(otheruser.token).emit("myuser", otheruser);
-          console.log("-");
+          if (otheruser.online)
+            io.to(otheruser.token).emit("myuser", otheruser);
+          console.log("Add friend OK");
           callback({ ok: true });
         }
       } catch (err) {
@@ -143,76 +152,187 @@ export default function (io) {
         socket.emit("myuser", myuser);
         console.log("-");
         console.log("other token:", otheruser);
-        io.to(otheruser.token).emit("myuser", otheruser);
+        if (otheruser.online) io.to(otheruser.token).emit("myuser", otheruser);
 
         console.log("-");
         callback({ ok: true });
       } catch (err) {
         console.log("-!!!!!!!!!!!");
         callback({ ok: false, error: err });
-
       }
     });
 
-    //  /** a user remove a room from his list */
-    //  socket.on("leaveRoom", async (_, id, callback) => {
-    //   try {
-    //     const user = await userController.checkUser(socket.id);
-    //     await roomController.leaveRoom(user, id);
-    //     const leaveMessage = {
-    //       chat: `${user.name} left this chat`,
-    //       user: { id: null, name: "system" },
-    //     };
-    //     socket.broadcast.to(id).emit("message", leaveMessage);
-    //     io.to(socket.id).emit("ro  oms", await roomController.getAllRooms());
-    //     socket.leave(id);
-    //     callback({ ok: true });
-    //   } catch (err) {
-    //     callback({ ok: false, error: err.message });
-    //   }
-    // });
+    //  /** a user leave a room */
+    socket.on("leaveRoom", async (id, callback) => {
+      try {
+        const user = await userController.checkUser(socket.id);
+        // await roomController.leaveRoom(user, id);
+
+        const leaveMessage = {
+          chat: `${user.name} left this chat`,
+          user: { id: "leave", name: "system" },
+        };
+        socket.broadcast.to(id).emit("message", leaveMessage); //???????????????????????
+        socket.leave(id);
+        // io.in(id).emit("leaveRoom") ????????????????????????????
+        callback({ ok: true });
+      } catch (err) {
+        callback({ ok: false, error: err.message });
+      }
+    });
 
     //  /** a user created new room with other user BUT NO NEED TO EMIT. JUST ROUTES*/
     socket.on("createRoom", async (data, callback) => {
-      try{
+      try {
         const otheruid = data.otheruid;
-      const user = await userController.checkUser(socket.id);
-      const room = await roomController.createRoom(user, otheruid);
-      console.log("CREATE ROOM ended:");
+        const user = await userController.checkUser(socket.id);
+        const room = await roomController.createRoom(user, otheruid);
+        console.log("CREATE ROOM ended:");
 
-      if (room) {
-        if (!room.added) {
-          callback({
-            ok: true,
-            error: "You already have the room on the list",
-            room: room.room,
-          });
-        } else {
-          console.log("create room emit good");
-          // io.to(other.token).emit("rooms", await roomController.getAllRoomsByUserId(other._id))
-          socket.emit(
-            "rooms",
-            await roomController.getAllRoomsByUserId(user._id)
-          );
-          socket.emit("myuser", room.user);
-
-          //It can be 1. you have roomDB, but not on the list
-          //          2. No room DB at all
-          if (room.exist) {
+        if (room) {
+          if (!room.added) {
             callback({
               ok: true,
-              error: "You already have the roomDB",
+              error: "You already have the room on the list",
               room: room.room,
             });
           } else {
-            callback({ ok: true, error: "ROOM CREATED!!!", room: room.room });
+            console.log("create room emit good");
+            // io.to(other.token).emit("rooms", await roomController.getAllRoomsByUserId(other._id))
+            socket.emit(
+              "rooms",
+              await roomController.getAllRoomsByUserId(user._id)
+            );
+            socket.emit("myuser", room.user);
+
+            //It can be 1. you have roomDB, but not on the list
+            //          2. No room DB at all
+            if (room.exist) {
+              callback({
+                ok: true,
+                error: "You already have the roomDB",
+                room: room.room,
+              });
+            } else {
+              callback({ ok: true, error: "ROOM CREATED!!!", room: room.room });
+            }
           }
+        } else {
+          callback({ ok: false, error: "??what error" });
         }
-      } else {
-        callback({ ok: false, error: "??what error" });
+      } catch (err) {
+        callback({ ok: false, error: err.message });
       }
-      }catch(err){
-        callback({ok:false, error: err.message})
+    });
+
+    /** Add to pending List (= sending a friend request)*/
+    socket.on("addPending", async (otheruid, callback) => {
+      try {
+        const u = await userController.checkUser(socket.id);
+        if (
+          otheruid.toString() === u._id.toString() ||
+          u.friends.some((each) => {
+            return each.toString() === otheruid;
+          })
+        ) {
+          callback({ ok: false, error: "you already friend" });
+        } else {
+          const { myuser, otheruser } = await userController.addPending(
+            u._id.toString(),
+            otheruid
+          );
+
+          socket.emit("myuser", myuser);
+          if (otheruser.online)
+            io.to(otheruser.token).emit("myuser", otheruser);
+
+          console.log("addPending OK");
+          callback({ ok: true });
+        }
+      } catch (err) {
+        console.log("-!!!!!!!!!!!");
+        callback({ ok: false, error: err });
+      }
+    });
+
+    /** Delete from pending List (= cancelling a friend request) */
+    socket.on("deletePending", async (otheruid, callback) => {
+      try {
+        const u = await userController.checkUser(socket.id);
+
+        console.log(u._id, otheruid);
+        const { myuser, otheruser } = await userController.deletePending(
+          u._id.toString(),
+          otheruid
+        );
+
+        socket.emit("myuser", myuser);
+        if (otheruser.online) io.to(otheruser.token).emit("myuser", otheruser);
+        console.log("Delete Pending Success");
+        callback({ ok: true });
+      } catch (err) {
+        console.log("Delete Pending Failed");
+        callback({ ok: false, error: err });
+      }
+    });
+
+    socket.on("block", async (otheruid, callback) => {
+      try {
+        const u = await userController.checkUser(socket.id);
+        if (
+          otheruid.toString() === u._id.toString() ||
+          u.blocked.some((each) => {
+            return each.toString() === otheruid;
+          })
+        ) {
+          callback({ ok: false, error: "you already block" });
+        } else {
+          const myuser = await userController.addBlocked(
+            u._id.toString(),
+            otheruid
+          );
+          socket.emit("myuser", myuser);
+          console.log("Block OK");
+          callback({ ok: true });
+        }
+      } catch (err) {
+        console.log("Block Failed");
+        callback({ ok: false, error: err });
+      }
+    });
+
+    socket.on("unblock", async (otheruid, callback) => {
+      try {
+        const u = await userController.checkUser(socket.id);
+        const myuser = await userController.deleteBlocked(
+          u._id.toString(),
+          otheruid
+        );
+        socket.emit("myuser", myuser);
+        console.log("Unblock Success");
+        callback({ ok: true });
+      } catch (err) {
+        console.log("Unblock Failed");
+        callback({ ok: false, error: err });
+      }
+    });
+
+    socket.on("sendRequestByName", async (othername, callback) => {
+      try {
+        const u = await userController.checkUser(socket.id);
+        const { myuser, otheruser } = await userController.addPendingByName(
+          u._id,
+          othername
+        );
+
+        socket.emit("myuser", myuser);
+        if (otheruser.online) io.to(otheruser.token).emit("myuser", otheruser);
+        console.log("sendRequestByName OK");
+        callback({ ok: true });
+      } catch (err) {
+        console.log(err.message)
+        console.log("sendRequestByName Failed");
+        callback({ ok: false, error: err.message });
       }
     });
 

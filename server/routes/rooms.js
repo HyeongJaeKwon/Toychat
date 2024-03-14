@@ -19,6 +19,7 @@ router.post("/", async (req, res) => {
   }
 });
 
+/** Get ALl Rooms + Other by uid */
 router.get("/:uid", async (req, res)=>{
   try{
 
@@ -33,6 +34,7 @@ router.get("/:uid", async (req, res)=>{
   }
 })
 
+/**Get room info + other info */
 router.get("/roomid/:rid/:uid", async (req, res)=>{
   try{
 

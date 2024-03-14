@@ -10,16 +10,18 @@ const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
   const navigate = useNavigate();
   const [roomDataList, setRoomDataList] = useState([]);
  
-  console.log("roomDatalist:", roomDataList);
+  // console.log("roomDatalist:", roomDataList);
   const location = useLocation();
   const roomid = location.pathname.split("/")[2];
 
   useEffect(() => {
+    socket.off("rooms")
     socket.on("rooms", (res) => {
       console.log("socket on rooms", res);
       setRoomDataList(res);
     });
 
+    socket.off("online")
     socket.on("online", (res) => {
       console.log("RoomDataList Adjust");
       setRoomDataList((prev) =>

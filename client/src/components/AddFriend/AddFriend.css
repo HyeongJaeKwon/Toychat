@@ -1,0 +1,66 @@
+.afContainer{
+    background-color: rgb(65, 65, 65);
+    width: 100%;
+    height: calc(100vh - 49px);
+    display: flex;
+    flex-direction: column;
+}
+
+.afMain{
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    padding: 25px 30px;
+    border-bottom: solid 0.3px rgb(125, 125, 125);
+}
+
+.afAddFriend{
+    color: whitesmoke;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.afYoucan{
+    color: whitesmoke;
+    font-size: 14px;
+    margin: 3px 0px;
+}
+
+.afSearchYouCan{
+    color: rgb(127, 127, 127);
+    font-size: 16px;
+}
+
+.afButton{
+    border-radius: 5px;
+    height: 30px;
+    /* padding: 0px 15px; */
+    background-color: rgb(89, 89, 165);
+    color: white;
+    font-weight: 600;
+    border: none;
+    width: 450px;
+    cursor: pointer;
+}
+
+.afSearch{
+    display: flex;
+    justify-content: space-between;
+    background-color: rgb(36, 36, 36);
+    align-items: center;
+    height: 50px;
+    border-radius: 7px;
+    padding: 0px 13px;
+    margin-top:15px;
+}
+
+.afResultSuccess{
+    color: green;
+    margin-top: 5px;
+}
+.afResultFail{
+    color: red;
+    margin-top: 5px;
+}
+
+

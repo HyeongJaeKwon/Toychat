@@ -100,7 +100,7 @@
     margin: 0px 30px;
     /* padding-right:30px; */
     background-color: rgb(149, 149, 149);
-    margin-right:50px;
+    margin-right:30px;
 }
 
 .flOnline{
@@ -128,7 +128,7 @@
 }
 .flStatus{
     margin-top:5px;
-    font-size: 14px;
+    font-size: 12px;
     color: whitesmoke;
 }
 .flFlag{
@@ -149,10 +149,9 @@
     height: 32px;
     border-radius: 50%;
     background-color: rgb(33, 33, 33);
-}
-.flMessage{
-    width:32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: rgb(33, 33, 33);
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    color: rgb(205, 204, 204);
+    cursor: pointer;
 }

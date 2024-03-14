@@ -13,56 +13,74 @@ const Chat = ({ user, id }) => {
   const [message, setMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
   const navigate = useNavigate();
-  const [ other, setOther] = useState(null);
+  const [other, setOther] = useState(null);
+  const [isHere, setIsHere] = useState(false);
   console.log("messageList:", messageList);
 
-  //   const {data, loading, error } = useFetch(`/api/v1/chats/${id}`)
-  //   console.log(data)
-
   useEffect(() => {
-    console.log("message reset")
-    setMessageList([])
+    setMessageList([]);
+    setIsHere(false)
 
-    /** load previous messages */
+    /** Load previous messages */
     axios.get(`/api/v1/chats/${id}`).then((res) => {
       setMessageList((prevMessageList) => [...res.data, ...prevMessageList]);
     });
 
-    if( user !== null){
-      axios.get(`/api/v1/rooms/roomid/${id}/${user._id}`).then((res)=>{
+    /** Load other profile */
+    if (user !== null) {
+      axios.get(`/api/v1/rooms/roomid/${id}/${user._id}`).then((res) => {
         // res.data => room + other
-        setOther(res.data.other)
-      })
+        setOther(res.data.other);
+      });
     }
 
     /** when message got deleted */
+    socket.off("deleteMessage");
     socket.on("deleteMessage", (res) => {
-      console.log(res);
-
-      // setMessageList((prev) => prev.concat({chat:"dwqdwq", user:{id:null, name:"system"}}));
+      console.log("delete Message", res);
       setMessageList((prevMessageList) =>
         prevMessageList.filter((message) => message._id !== res.chatid)
       );
     });
 
-    
     /** when new message comes */
-    socket.off("message")
+    socket.off("message");
     socket.on("message", (res) => {
-      setMessageList((prevMessageList) =>[...prevMessageList, res]);
-    });
-
-    if(user !== null){
-      /** tell that I have joined to room id */
-    socket.emit("joinRoom", id, (res) => {
-      if (res && res.ok) {
-        console.log("success join", res);
-      } else {
-        console.log("failed", res);
+      if (res.user.name === "system" && res.user.id) {
+        if (res.user.id === "join") {
+          setIsHere(true)
+        } else if (res.user.id === "leave") {
+          setIsHere(false)
+        }
+      }
+      if( res.user.name !== "system"){
+        setMessageList((prevMessageList) => [...prevMessageList, res]);
       }
     });
+
+    /** tell that I have joined to room id */
+    if (user !== null) {
+      socket.emit("joinRoom", id, (res) => {
+        if (res && res.ok) {
+          console.log("success join", res);
+        } else {
+          console.log("failed", res);
+        }
+      });
     }
-  }, [user,id]);
+
+    /** When leaving the page */
+    return () => {
+      console.log("Chat unmounted");
+      socket.emit("leaveRoom", id, (res) => {
+        if (res && res.ok) {
+          console.log("success leave", res);
+        } else {
+          console.log("failed", res);
+        }
+      });
+    };
+  }, [user, id]);
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -88,18 +106,20 @@ const Chat = ({ user, id }) => {
         "Loading"
       ) : (
         <div className="cContainer">
-
           <MessageContainer
             messageList={messageList}
             setMessageList={setMessageList}
             rid={id}
             user={user}
-            other = {other}
+            other={other}
           />
           <InputField
             message={message}
             setMessage={setMessage}
             sendMessage={sendMessage}
+            isHere = {
+              isHere
+            }
           />
         </div>
       )}

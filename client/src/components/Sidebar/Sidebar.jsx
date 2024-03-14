@@ -66,7 +66,7 @@ const Sidebar = ({ user, setUser, menuInfo, setMenuInfo, }) => {
         <div className="tAdditionalMenus">
           {arr.map((each) => {
             return (
-              <div className="fsSideItem" onClick={()=>moveTo(each.address)}>
+              <div key={each.title} className="fsSideItem" onClick={()=>moveTo(each.address)}>
                 {/* <FaUserFriends className="tIcon"/> */}
                 {each.icon}
                 {each.title}

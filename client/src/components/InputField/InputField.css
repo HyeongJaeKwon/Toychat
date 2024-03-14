@@ -5,7 +5,7 @@
     display: flex;
     width: 100%;
     padding: 0px;
-    align-items: center;
+    align-items: end;
     /* margin: 30px; */
     border-radius: 10px;
     /* margin-top:20px; */
@@ -91,3 +91,10 @@
     background-color: yellow;
   }
   
+  .ifIsHere{
+    margin-left:30px;
+    color:whitesmoke;
+    font-size:15px;
+    margin-bottom: 5px;
+    /* background-color: red; */
+  }

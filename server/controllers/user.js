@@ -55,7 +55,6 @@ userController.deleteUser = async (uid) => {
   }
 };
 
-
 /** get all users */
 userController.getAllUsers = async () => {
   try {
@@ -66,32 +65,143 @@ userController.getAllUsers = async () => {
   }
 };
 
+/** ADD/DELETE FREIND */
 userController.addFriend = async (myuid, otheruid) => {
-  try{
-    const myuser = await User.findByIdAndUpdate(myuid, { $push: {friends: otheruid}},{new:true})
-    const otheruser = await User.findByIdAndUpdate(otheruid, { $push: {friends: myuid}},{new:true})
-    return {myuser, otheruser}
-
-  }catch(err){
-    throw err
+  try {
+    const myuser = await User.findByIdAndUpdate(
+      myuid,
+      { $push: { friends: otheruid } },
+      { new: true }
+    );
+    const otheruser = await User.findByIdAndUpdate(
+      otheruid,
+      { $push: { friends: myuid } },
+      { new: true }
+    );
+    return { myuser, otheruser };
+  } catch (err) {
+    throw err;
   }
-}
+};
 
 userController.deleteFriend = async (myuid, otheruid) => {
-  try{
-    const myuser = await User.findByIdAndUpdate(myuid, { $pull: {friends: otheruid}},{new:true})
-    const otheruser = await User.findByIdAndUpdate(otheruid, { $pull: {friends: myuid}},{new:true})
-    return {myuser, otheruser}
-
-  }catch(err){
-    throw err
+  try {
+    const myuser = await User.findByIdAndUpdate(
+      myuid,
+      { $pull: { friends: otheruid } },
+      { new: true }
+    );
+    const otheruser = await User.findByIdAndUpdate(
+      otheruid,
+      { $pull: { friends: myuid } },
+      { new: true }
+    );
+    return { myuser, otheruser };
+  } catch (err) {
+    throw err;
   }
-}
-// data.user = await User.findByIdAndUpdate(
-//   user._id,
-//   { $push: { rooms: existingRoom._id } },
-//   { new: true }
-// );
+};
 
+/** ADD/DELETE PENDING */
+userController.addPending = async (myuid, otheruid) => {
+  try {
+    const myuser = await User.findByIdAndUpdate(
+      myuid,
+      { $push: { pending: { id: otheruid, out: true } } },
+      { new: true }
+    );
+    const otheruser = await User.findByIdAndUpdate(
+      otheruid,
+      { $push: { pending: { id: myuid, out: false } } },
+      { new: true }
+    );
+    return { myuser, otheruser };
+  } catch (err) {
+    throw err;
+  }
+};
+
+userController.deletePending = async (myuid, otheruid) => {
+  try {
+    const myuser = await User.findByIdAndUpdate(
+      myuid,
+      { $pull: { pending: { id: otheruid } } },
+      { new: true }
+    );
+    const otheruser = await User.findByIdAndUpdate(
+      otheruid,
+      { $pull: { pending: { id: myuid } } },
+      { new: true }
+    );
+    return { myuser, otheruser };
+  } catch (err) {
+    throw err;
+  }
+};
+
+/** ADD/DELETE BLOCKED */
+userController.addBlocked = async (myuid, otheruid) => {
+  try {
+    const myuser = await User.findByIdAndUpdate(
+      myuid,
+      { $push: { blocked: otheruid } },
+      { new: true }
+    );
+    return myuser;
+  } catch (err) {
+    throw err;
+  }
+};
+
+userController.deleteBlocked = async (myuid, otheruid) => {
+  try {
+    const myuser = await User.findByIdAndUpdate(
+      myuid,
+      { $pull: { blocked: otheruid } },
+      { new: true }
+    );
+
+    return myuser;
+  } catch (err) {
+    throw err;
+  }
+};
+
+/** ADD Friend By Name */
+userController.addPendingByName = async (myuid, othername) => {
+  try {
+    const other = await User.findOne({ name: othername });
+
+
+
+    if (
+      other._id.toString() === myuid.toString() ||
+      other.friends.some((each) => {
+        return each.toString() === myuid.toString();
+      })
+    )
+      throw new Error("you already friend");
+
+    if(other.pending.some((each) => {
+      return each.id.toString() === myuid.toString();
+    }))throw new Error("you already pending");
+
+    const myuser = await User.findByIdAndUpdate(
+      myuid,
+      { $push: { pending: { id: other._id, out: true } } },
+      { new: true }
+    );
+    console.log("d")
+    const otheruser = await User.findByIdAndUpdate(
+      other._id,
+      { $push: { pending: { id: myuid, out: false } } },
+      { new: true }
+    );
+    console.log("d")
+    return { myuser, otheruser };
+  } catch (err) {
+    throw err;
+  }
+};
 
 export default userController;

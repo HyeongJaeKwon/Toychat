@@ -97,8 +97,10 @@ roomController.getAllRoomsByUserId = async (uid) => {
     );
 
     const otherList =  await Promise.all(roomList.map(async (room)=>{
-      const otheruid = room.users[0].toString() === uid ? room.users[1] : room.users[0]
+      const otheruid = room.users[0].toString() === uid.toString() ? room.users[1] : room.users[0]
       const other = await User.findById(otheruid)
+      console.log("otheruid", otheruid)
+      console.log
       if( !other){
         return {_id: null }
       }else{
@@ -106,7 +108,9 @@ roomController.getAllRoomsByUserId = async (uid) => {
       }
     }))
 
+    // console.log("otherList:", otherList);
     const data = roomList.map((each,index)=>{
+      // console.log("index")
       return {room:each, other: otherList[index]}
     })
 
