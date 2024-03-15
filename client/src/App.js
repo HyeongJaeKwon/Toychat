@@ -10,6 +10,7 @@ import Test from "./pages/Test/Test.jsx";
 
 import Friend from "./pages/Friend/Friend.jsx";
 import C from "./pages/C/C.jsx";
+import Voice from "./components/Voice/Voice.jsx";
 
 
 function App() {
@@ -49,6 +50,7 @@ function App() {
       {/* <Route path="/" element={<Test user ={user} setUser = {setUser} />}/> */}
       <Route path="/chat/:cid" element={<C user={user} setUser = {setUser} />}/>
       <Route path="/" element={<Friend user={user} setUser = {setUser}/>}/>
+    
       {/* <Route path="/test" element={<Test user ={user} setUser = {setUser} roomList = {roomList} setRoomList= {setRoomList}/>}/> */}
     </Routes>
   </BrowserRouter>

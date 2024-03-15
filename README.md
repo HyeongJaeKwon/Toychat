@@ -5,3 +5,4 @@
 3/13/2024 - Friend management, chat, room, design, so many things done\
 3/14/2024 - Mostly CSS Design & Refactoring => Front half done for now => Back to Backend for more features \
 3/15/2024 - Almost Done with Basic chats & Friend Management & User Account interactions (Add, Block, Request, etc) => ADD  CHANNELS + LIVE VoiceTalk !\
+3/16/2024 - Agora (= Real Time Communication Package)  => Finished One-to-One Voice&Video Call Basic Functions\

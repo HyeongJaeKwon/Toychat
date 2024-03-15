@@ -106,7 +106,7 @@ export default function (io) {
 
         callback({ ok: true });
       } catch (err) {
-        callback({ ok: false, error: err });
+        callback({ ok: false, error: err.message });
       }
     });
 
@@ -135,7 +135,7 @@ export default function (io) {
         }
       } catch (err) {
         console.log("-!!!!!!!!!!!");
-        callback({ ok: false, error: err });
+        callback({ ok: false, error: err.message });
       }
     });
 
@@ -158,7 +158,7 @@ export default function (io) {
         callback({ ok: true });
       } catch (err) {
         console.log("-!!!!!!!!!!!");
-        callback({ ok: false, error: err });
+        callback({ ok: false, error: err.message });
       }
     });
 
@@ -251,7 +251,7 @@ export default function (io) {
         }
       } catch (err) {
         console.log("-!!!!!!!!!!!");
-        callback({ ok: false, error: err });
+        callback({ ok: false, error: err.message });
       }
     });
 
@@ -272,7 +272,7 @@ export default function (io) {
         callback({ ok: true });
       } catch (err) {
         console.log("Delete Pending Failed");
-        callback({ ok: false, error: err });
+        callback({ ok: false, error: err.message });
       }
     });
 
@@ -282,7 +282,7 @@ export default function (io) {
         if (
           otheruid.toString() === u._id.toString() ||
           u.blocked.some((each) => {
-            return each.toString() === otheruid;
+            return each.toString() === otheruid.toString();
           })
         ) {
           callback({ ok: false, error: "you already block" });
@@ -297,7 +297,7 @@ export default function (io) {
         }
       } catch (err) {
         console.log("Block Failed");
-        callback({ ok: false, error: err });
+        callback({ ok: false, error: err.message });
       }
     });
 
@@ -313,7 +313,7 @@ export default function (io) {
         callback({ ok: true });
       } catch (err) {
         console.log("Unblock Failed");
-        callback({ ok: false, error: err });
+        callback({ ok: false, error: err.message });
       }
     });
 

@@ -50,6 +50,11 @@ const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
   const moveToChat = (rid) => {
     navigate(`/chat/${rid}`);
   };
+  
+  const handleCall = (e) =>{
+    e.preventDefault();
+    setMenuInfo((prev) => ({ ...prev, isOpen: false }));
+  }
 
   const handleContextMenu = (event, roomid) => {
     event.preventDefault();
@@ -110,6 +115,9 @@ const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
             className="contextMenu"
             style={{ top: menuInfo.mPosition.y, left: menuInfo.mPosition.x }}
           >
+            <div className="contextMenuOption" onClick={handleCall}>
+              Call
+            </div>
             <div className="contextMenuOption" onClick={handleDelete}>
               Delete
             </div>

@@ -8,6 +8,7 @@ import { Button } from "@mui/base/Button";
 import axios from "axios";
 import useFetch from "../../../hooks/useFetch.js";
 import ChatProfile from "../../../components/ChatProfile/ChatProfile.jsx";
+import Voice from "../../../components/Voice/Voice.jsx";
 
 const Chat = ({ user, id }) => {
   const [message, setMessage] = useState("");
@@ -16,10 +17,11 @@ const Chat = ({ user, id }) => {
   const [other, setOther] = useState(null);
   const [isHere, setIsHere] = useState(false);
   console.log("messageList:", messageList);
+  const [joined, setJoined] = useState(true)
 
   useEffect(() => {
     setMessageList([]);
-    setIsHere(false)
+    setIsHere(false);
 
     /** Load previous messages */
     axios.get(`/api/v1/chats/${id}`).then((res) => {
@@ -48,12 +50,12 @@ const Chat = ({ user, id }) => {
     socket.on("message", (res) => {
       if (res.user.name === "system" && res.user.id) {
         if (res.user.id === "join") {
-          setIsHere(true)
+          setIsHere(true);
         } else if (res.user.id === "leave") {
-          setIsHere(false)
+          setIsHere(false);
         }
       }
-      if( res.user.name !== "system"){
+      if (res.user.name !== "system") {
         setMessageList((prevMessageList) => [...prevMessageList, res]);
       }
     });
@@ -106,20 +108,21 @@ const Chat = ({ user, id }) => {
         "Loading"
       ) : (
         <div className="cContainer">
+          {other && (<div className="cOtherInfo" style={joined ? {backgroundColor:"black"} : null }>{other.name}</div>)}
+          {joined &&(<Voice myuser ={user} setJoined={setJoined}/>)}
           <MessageContainer
             messageList={messageList}
             setMessageList={setMessageList}
             rid={id}
             user={user}
             other={other}
+            setJoined={setJoined}
           />
           <InputField
             message={message}
             setMessage={setMessage}
             sendMessage={sendMessage}
-            isHere = {
-              isHere
-            }
+            isHere={isHere}
           />
         </div>
       )}

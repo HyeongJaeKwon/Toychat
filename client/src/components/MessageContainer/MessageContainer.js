@@ -4,8 +4,9 @@ import { Container } from "@mui/system";
 import axios from "axios";
 import socket from "../../server";
 import ChatProfile from "../ChatProfile/ChatProfile";
+import Voice from "../Voice/Voice";
 
-const MessageContainer = ({ messageList, setMessageList, rid, user, other }) => {
+const MessageContainer = ({ messageList, setMessageList, rid, user, other,setJoined }) => {
   const [menu, setMenu] = useState(false);
   const [menuId, setMenuId] = useState("");
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
@@ -47,6 +48,12 @@ const MessageContainer = ({ messageList, setMessageList, rid, user, other }) => 
     });
   };
 
+  /**TEMP TEMP TEMP TEMP */
+  const handleCall = (e) =>{
+    e.preventDefault();
+    setJoined(true)
+  }
+
   return (
     <>
       <div
@@ -54,7 +61,7 @@ const MessageContainer = ({ messageList, setMessageList, rid, user, other }) => 
         onClick={handleClick}
         onContextMenu={(e) => e.preventDefault()}
       >
-           <ChatProfile myuser={user} other={other}/>
+    <ChatProfile myuser={user} other={other} />
        
         {messageList.map((message, index) => {
           return (
@@ -129,7 +136,7 @@ const MessageContainer = ({ messageList, setMessageList, rid, user, other }) => 
               ) : index === 0 ||
                 messageList[index - 1].user.name == user.name ||
                 messageList[index - 1].user.name === "system" ? (
-                <div className="bigMessage"     onContextMenu={(e) => handleContextMenu(e, message._id)}>
+                <div className="bigMessage"   onClick={handleCall}>
                   <img
                     src="/profile.jpeg"
                     className="profile-image"

@@ -1,0 +1,58 @@
+.vContainer{
+    background-color: black;
+    height: 300px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+}
+
+.vUsers{
+    display: flex;
+    /* flex-direction: row; */
+    margin: 0px auto;
+}
+.vImg{
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    background-color: blue;
+    align-items: center;
+    justify-content: center;
+    margin: 0px 10px;
+    position: relative;
+}
+.vImg img{
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+}
+.vGreen{
+    position: absolute;
+    border-radius: 50%;
+    width: 73px;
+    height: 73px;
+    border: green solid 5px;
+    top: 0; 
+    left: 0;
+    
+}
+
+.vOptions{
+    display: flex;
+    margin: 0px auto;
+    margin-top:20px;
+}
+.vOneOption{
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    background-color: rgb(48, 48, 48);
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    margin: 0px 10px;
+    color: whitesmoke;
+
+}
