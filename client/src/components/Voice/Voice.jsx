@@ -11,9 +11,9 @@ import { ImPhoneHangUp } from "react-icons/im";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { VideoPlayer } from "./VideoPlayer";
 
-const APP_ID = 
+const APP_ID =
 const TOKEN =
-  const CHANNEL = 
+ const CHANNEL = 
 
 const client = AgoraRTC.createClient({
   mode: "rtc",
