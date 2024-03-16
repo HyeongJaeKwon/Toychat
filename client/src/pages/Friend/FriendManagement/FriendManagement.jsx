@@ -19,12 +19,12 @@ const FriendManagement = ({ user, setUser, menuInfo, setMenuInfo }) => {
   useEffect(() => {
     if (user !== null) {
       axios.get(`/api/v1/users/friends/${user._id}`).then((res) => {
-        console.log("freindlist", res.data);
+        // console.log("freindlist", res.data);
         setFriendList(res.data);
 
         axios.get(`/api/v1/users/pending/${user._id}`).then((pendingres) => {
           setPendingList(pendingres.data);
-          console.log("pending list: ", pendingres.data);
+          // console.log("pending list: ", pendingres.data);
 
           axios.get(`/api/v1/users/blocked/${user._id}`).then((blockedres) => {
             setBlockedList(blockedres.data);

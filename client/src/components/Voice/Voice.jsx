@@ -11,24 +11,92 @@ import { ImPhoneHangUp } from "react-icons/im";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { VideoPlayer } from "./VideoPlayer";
 
-const APP_ID =
-const TOKEN =
- const CHANNEL = 
+const APP_ID = process.env.REACT_APP_APP_ID;
+const TOKEN = process.env.REACT_APP_TOKEN;
+const CHANNEL = process.env.REACT_APP_CHANNEL;
 
-const client = AgoraRTC.createClient({
+let client = AgoraRTC.createClient({
   mode: "rtc",
   codec: "vp8",
 });
+AgoraRTC.setLogLevel(4);
 
 let micMuted = false;
+let camMuted = true;
+
+let audioTrack = null;
+let videoTrack = null;
 
 const Voice = ({ myuser, setJoined }) => {
-  const [localTracks, setLocalTracks] = useState([]);
-
   const [users, setUsers] = useState([]);
 
+  useEffect(() => {
+    console.log("Voice init");
+    console.log("audio, video Initial Value: ", [audioTrack, videoTrack]);
+    audioTrack = null;
+    videoTrack = null;
+    setUsers([]);
+    client.on("user-published", handleUserPublished);
+    client.on("user-left", handleUserLeft);
+
+    client
+      .join(APP_ID, CHANNEL, TOKEN, myuser.name)
+      .then((uid) =>
+        // Promise.all([AgoraRTC.createMicrophoneAndCameraTracks(), uid])
+        Promise.all([AgoraRTC.createMicrophoneAudioTrack(), uid])
+      )
+      .then(([track, uid]) => {
+        // setAudioTrack([track]);
+        audioTrack = track;
+
+        setUsers((previousUsers) => [
+          ...previousUsers,
+          {
+            uid,
+            // videoTrack,
+            audioTrack,
+            volume: 0,
+          },
+        ]);
+
+        client.publish(track);
+        initVolumeIndicator();
+      });
+
+    /** (Wrong) when unmount.... delete mic&Cam + off sockets + unpublish the user from the channel */
+    /** (Correct) But Connection should persist even when away from the page */
+    const cleanupFunction = async () => {
+      try {
+        micMuted = false;
+        camMuted = true;
+        console.log("Return Logic Triggered");
+        console.log("Removing AudioTrack: ", audioTrack);
+        audioTrack.stop();
+        audioTrack.close();
+        audioTrack = null;
+        console.log("Is VideoTrack null??: ", videoTrack);
+        if (videoTrack !== null) {
+          console.log("Removing VideoTrack: ", audioTrack);
+          videoTrack.stop();
+          videoTrack.close();
+          videoTrack = null;
+        }
+        client.off("user-published", handleUserPublished);
+        client.off("user-left", handleUserLeft);
+        client.off("volume-indicator", handleVolume);
+        client.unpublish();
+        client.leave();
+        console.log("Return Logic Ended");
+      } catch (err) {
+        alert(`Something went wrong, please refresh: ${err.message}`);
+      }
+    };
+
+    return cleanupFunction;
+  }, [setJoined]);
+
   const handleCancel = () => {
-    returnLogic();
+    // returnLogic();
     setJoined(false);
   };
 
@@ -56,15 +124,22 @@ const Voice = ({ myuser, setJoined }) => {
 
   /** Add User into UserList + Audio Play O + Video Play X */
   const handleUserPublished = async (user, mediaType) => {
+    console.log("Handle User Published");
     /**Video Comes First, then Audio Comes!! */
     await client.subscribe(user, mediaType);
     if (mediaType === "video") {
-      user.volume = 0;
-      setUsers((previousUsers) => [...previousUsers, user]);
     }
 
     if (mediaType === "audio") {
+      user.volume = 0;
       user.audioTrack.play();
+      setUsers((previousUsers) => {
+        if (previousUsers.some((each) => each.uid === user.uid)) {
+          return previousUsers;
+        } else {
+          return [...previousUsers, user];
+        }
+      });
     }
   };
 
@@ -75,36 +150,46 @@ const Voice = ({ myuser, setJoined }) => {
     );
   };
 
-  const handleCamera = () => {};
-
-  const handleMic = () => {
-    console.log("handleMic");
-    const [audioTrack, videoTrack] = localTracks;
-    console.log("localTracks: ", localTracks);
-    micMuted = !micMuted;
-    audioTrack.setMuted(micMuted);
-  };
-
-  const returnLogic = () => {
-    try {
-      for (let localTrack of localTracks) {
-        localTrack.stop();
-        localTrack.close();
-      }
-      client.off("user-published", handleUserPublished);
-      client.off("user-left", handleUserLeft);
-      client.off("volume-indicator", handleVolume);
-      client.unpublish(localTracks).then(() => client.leave());
-    } catch (err) {
-      alert(`Something went wrong, please refresh: ${err.message}`);
+  const handleCamera = () => {
+    console.log("handle Cam");
+    console.log("videoTrack: ", videoTrack);
+    if (videoTrack === null) {
+      Promise.all([AgoraRTC.createCameraVideoTrack(), myuser.name]).then(
+        ([track, uid]) => {
+          console.log("Promise.all Success: ", track);
+          videoTrack = track;
+          setUsers((previousUsers) =>
+            previousUsers.filter((user) => {
+              if (user.uid === uid) {
+                user.videoTrack = track;
+              }
+              return true;
+            })
+          );
+          camMuted = false;
+          client.publish(track);
+          // initVolumeIndicator();
+        }
+      );
+    } else {
+      videoTrack.setEnabled(camMuted);
+      camMuted = !camMuted;
     }
   };
+
+  const handleMic = () => {
+    micMuted = !micMuted;
+    audioTrack.setMuted(micMuted);
+    // audioTrack.stop();
+    // audioTrack.close();
+  };
+
   const arr = [
     {
       icon: <BsCameraVideoOffFill size={25} />,
       id: "camera",
       function: handleCamera,
-      style: {},
+      style: !camMuted ? { backgroundColor: "white", color: "black" } : {},
     },
     {
       icon: <IoRocketSharp size={25} />,
@@ -136,52 +221,74 @@ const Voice = ({ myuser, setJoined }) => {
     },
   ];
 
-  useEffect(() => {
-    setUsers([]);
-    client.on("user-published", handleUserPublished);
-    client.on("user-left", handleUserLeft);
-
-    client
-      .join(APP_ID, CHANNEL, TOKEN, myuser.name)
-      .then(
-        (uid) => Promise.all([AgoraRTC.createMicrophoneAndCameraTracks(), uid])
-        // Promise.all([AgoraRTC.createMicrophoneAudioTrack(), uid])
-      )
-      .then(([tracks, uid]) => {
-        const [audioTrack, videoTrack] = tracks;
-        // const audioTrack = tracks;
-        setLocalTracks(tracks);
-        setUsers((previousUsers) => [
-          ...previousUsers,
-          {
-            uid,
-            videoTrack,
-            audioTrack,
-            volume: 0,
-          },
-        ]);
-
-        client.publish(tracks);
-        initVolumeIndicator();
-      });
-
-    /** (Wrong) when unmount.... delete mic&Cam + off sockets + unpublish the user from the channel */
-    /** (Correct) But Connection should persist even when away from the page */
-    return () => {
-      returnLogic();
-    };
-  }, []);
-
   return (
     <div className="vContainer">
       <div className="vUsers">
-        {users.map((each) => (
-          <div className="vImg">
-            <img src={"/profile.jpeg"}></img>
-            {each.volume > 50 && <div className="vGreen"></div>}
-            {/* <div style={{ color: "white" }}>dwdw</div> */}
+        {users.some((each) => {
+          if (each.uid === myuser.name) {
+            return !camMuted;
+          } else {
+            return each.videoTrack;
+          }
+        }) ? (
+          <div className="vCams">
+            {users.map((each, index) =>
+              each.uid === myuser.name && camMuted ? (
+                <div
+                  style={{
+                    width: "300px",
+                    height: "230px",
+                    backgroundColor: "gray",
+                    marginTop: "5px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {" "}
+                  <div
+                   className="vDefault"
+                  >
+                    <img src={"/profile.jpeg"}></img>
+                  </div>
+                </div>
+              ) : (
+                <div key={`${each.uid}-${index}`}>
+                  {each.videoTrack ? (
+                    <VideoPlayer user={each} />
+                  ) : (
+                    <div
+                      style={{
+                        width: "300px",
+                        height: "230px",
+                        backgroundColor: "gray",
+                        marginTop: "5px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <div
+                           className="vDefault"
+                      >
+                        <img src={"/profile.jpeg"}></img>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            )}
           </div>
-        ))}
+        ) : (
+          users.map((each, index) => (
+            <div key={`${each.uid}-${index}`}>
+              <div className="vImg">
+                <img src={"/profile.jpeg"}></img>
+                {each.volume > 50 && <div className="vGreen"></div>}
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       <div className="vOptions">

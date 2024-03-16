@@ -9,6 +9,7 @@ import axios from "axios";
 import useFetch from "../../../hooks/useFetch.js";
 import ChatProfile from "../../../components/ChatProfile/ChatProfile.jsx";
 import Voice from "../../../components/Voice/Voice.jsx";
+import VoiceClone from "../../../components/Voice/Video.jsx";
 
 const Chat = ({ user, id }) => {
   const [message, setMessage] = useState("");
@@ -16,8 +17,7 @@ const Chat = ({ user, id }) => {
   const navigate = useNavigate();
   const [other, setOther] = useState(null);
   const [isHere, setIsHere] = useState(false);
-  console.log("messageList:", messageList);
-  const [joined, setJoined] = useState(true)
+  const [joined, setJoined] = useState(false);
 
   useEffect(() => {
     setMessageList([]);
@@ -39,7 +39,7 @@ const Chat = ({ user, id }) => {
     /** when message got deleted */
     socket.off("deleteMessage");
     socket.on("deleteMessage", (res) => {
-      console.log("delete Message", res);
+      // console.log("delete Message", res);
       setMessageList((prevMessageList) =>
         prevMessageList.filter((message) => message._id !== res.chatid)
       );
@@ -64,7 +64,7 @@ const Chat = ({ user, id }) => {
     if (user !== null) {
       socket.emit("joinRoom", id, (res) => {
         if (res && res.ok) {
-          console.log("success join", res);
+          // console.log("success join", res);
         } else {
           console.log("failed", res);
         }
@@ -73,7 +73,7 @@ const Chat = ({ user, id }) => {
 
     /** When leaving the page */
     return () => {
-      console.log("Chat unmounted");
+      // console.log("Chat unmounted");
       socket.emit("leaveRoom", id, (res) => {
         if (res && res.ok) {
           console.log("success leave", res);
@@ -86,9 +86,9 @@ const Chat = ({ user, id }) => {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    console.log(message);
+    // console.log(message);
     socket.emit("sendMessage", message, id, (res) => {
-      console.log("Res", res);
+      // console.log("Res", res);
       if (!res.ok) {
         console.log("error message", res.error);
       }
@@ -108,8 +108,25 @@ const Chat = ({ user, id }) => {
         "Loading"
       ) : (
         <div className="cContainer">
-          {other && (<div className="cOtherInfo" style={joined ? {backgroundColor:"black"} : null }>{other.name}</div>)}
-          {joined &&(<Voice myuser ={user} setJoined={setJoined}/>)}
+          {other && (
+            <div
+              className="cOtherInfo"
+              style={joined ? { backgroundColor: "black" } : null}
+              onClick={()=>setJoined(!joined)}
+            >
+              <div className="cProfile">
+                <div className="cImg">
+                  <img src={"/profile.jpeg"}></img>
+                  <div
+                    className={other.online ? "cStatusOn" : "cStatusOff"}
+                  />
+                </div>
+                
+              </div>
+              <div className="cUsername">{other.name}</div>
+            </div>
+          )}
+          {joined && <Voice myuser={user} setJoined={setJoined} />}
           <MessageContainer
             messageList={messageList}
             setMessageList={setMessageList}

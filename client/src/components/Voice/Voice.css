@@ -8,11 +8,30 @@
     
 }
 
+.vCams{
+    display: flex;
+    justify-content: center;
+    height: 220px;
+    width: 100%;
+}
+
 .vUsers{
     display: flex;
     /* flex-direction: row; */
     margin: 0px auto;
 }
+.vDefault{
+    width: 50px;
+    height: 50px,
+    borderRadius 50%;
+
+}
+.vDefault img{
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+}
+    
 .vImg{
     border-radius: 50%;
     width: 80px;
@@ -37,6 +56,12 @@
     top: 0; 
     left: 0;
     
+}
+
+.vVid{
+    border-radius: 10px;
+    width: 200px;
+    height: 120px;
 }
 
 .vOptions{

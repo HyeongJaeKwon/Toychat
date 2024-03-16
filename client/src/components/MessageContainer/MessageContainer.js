@@ -13,8 +13,14 @@ const MessageContainer = ({ messageList, setMessageList, rid, user, other,setJoi
   const [style, setStyle] = useState("");
   const messagesEndRef = useRef(null);
 
+  const [str, setStr] = useState("hi")
+
   useEffect(() => {
+    setStr("bye")   
     scrollToBottom();
+    return () =>{
+      console.log("mc: ", str)
+    }
   }, [messageList]);
 
   const scrollToBottom = () => {
@@ -26,6 +32,7 @@ const MessageContainer = ({ messageList, setMessageList, rid, user, other,setJoi
 
   const handleContextMenu = (event, chatid) => {
     event.preventDefault();
+    console.log(str)
 
     setMenu(true);
     setMenuId(chatid);

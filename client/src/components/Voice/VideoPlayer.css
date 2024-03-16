@@ -1,0 +1,9 @@
+.vpCam{
+    /* width: min(300px, calc(50% - 10px));
+    height: min(170px, calc(50vw - 10px)); */
+
+    width: 300px;
+    height: 230px;
+    background-color: #ccc;
+    margin: 5px; 
+}

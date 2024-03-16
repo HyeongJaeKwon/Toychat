@@ -17,13 +17,13 @@ const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
   useEffect(() => {
     socket.off("rooms")
     socket.on("rooms", (res) => {
-      console.log("socket on rooms", res);
+      // console.log("socket on rooms", res);
       setRoomDataList(res);
     });
 
     socket.off("online")
     socket.on("online", (res) => {
-      console.log("RoomDataList Adjust");
+      // console.log("RoomDataList Adjust");
       setRoomDataList((prev) =>
         prev.filter((each) => {
           if (each.other._id === res._id) {
@@ -40,7 +40,7 @@ const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
       axios.get(`/api/v1/rooms/${user._id}`).then((res) => {
         if (res.data) {
           // res.data == [ {room: , other: },... ]
-          console.log("axios got rooms");
+          // console.log("axios got rooms");
           setRoomDataList(res.data);
         }
       });

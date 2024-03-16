@@ -13,8 +13,59 @@
 }
 
 .cOtherInfo{
-    height: 80px;
+    height: 40px;
     background-color: rgb(53, 52, 57);
-    color: white;
+
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    padding: 5px;
+    justify-content: start;
+  
+    /* margin: 1px 0px; */
+    color: rgb(181, 181, 181);
+    cursor: pointer;
   
 }
+
+.cProfile{
+    /* background-color: red; */
+    width: 32px;
+    position: relative;
+    margin-right: 10px;
+  }
+  .cProfile img {
+    width: 32px;
+    border-radius: 50px;
+    margin-right: 10px;
+  }
+
+  .cImg {
+    width: 32px;
+    border-radius: 50px;
+    /* margin-right: 10px; */
+    /* position: relative; */
+    /* background-color: purple; */
+  }
+  .cStatusOn{
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: green;
+    position: absolute;
+    bottom: 0px; /* Move the rectangle up by half its height */
+    right: 0px; 
+  }
+  .cStatusOff{
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: black;
+    position: absolute;
+    bottom: 0px; /* Move the rectangle up by half its height */
+    right: 0px; 
+  }
+  .cUsername {
+    padding-right: 10px;
+  }
+  
