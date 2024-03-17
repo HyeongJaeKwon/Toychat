@@ -19,22 +19,7 @@ const Friend = ({ user, setUser }) => {
     mPosition: { x: 0, y: 0 },
     mType: "",
   });
-
-  // const createRoom = (other) => {
-  //   const data = {
-  //     user: user,
-  //     other: other,
-  //   };
-
-  //   axios.post("/api/v1/rooms", data).then((res)=>{
-  //       if(!roomList.some((each)=>each._id === res.data.room._id)){
-  //           setRoomList(prev =>[res.data.room, ...prev])
-  //       }
-  //       setUser(res.data.user)
-  //   })
-  //   // socket.emit("createRoom", data, (res) => {});
-  // };
-
+  
   return (
     <div className="fContainer">
       <Sidebar

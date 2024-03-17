@@ -22,8 +22,8 @@
 }
 .vDefault{
     width: 50px;
-    height: 50px,
-    borderRadius 50%;
+    height: 50px;
+    position: relative;
 
 }
 .vDefault img{
@@ -32,6 +32,8 @@
     height: 50px;
 }
     
+
+
 .vImg{
     border-radius: 50%;
     width: 80px;
@@ -57,11 +59,28 @@
     left: 0;
     
 }
+.vGreenVid{
+    position: absolute;
+    border-radius: 5px;
+    width: 340px;
+    height: 200px;
+    border: green solid 5px;
+    top: 0; 
+    left: 0;
+    
+}
 
 .vVid{
-    border-radius: 10px;
-    width: 200px;
-    height: 120px;
+    border-radius: 5px;
+    width: 350px;
+    height: 210px;
+    background-color: rgb(78, 78, 78);
+    /* border: green 5px solid; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px 10px;
+    position: relative;
 }
 
 .vOptions{

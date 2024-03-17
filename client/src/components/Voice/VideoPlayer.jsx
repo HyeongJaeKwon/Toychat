@@ -19,7 +19,7 @@ export const VideoPlayer = ({ user }) => {
     <div className='vpCam'>
       <div
         ref={ref}
-        style={{ width: '100%', height: '100%' }}
+        className='vpVideoItself'
       ></div>
 </div>
   );

@@ -1,11 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import "./FTest.css";
-import { useEffect, useState } from "react";
-import useFetch from "../../hooks/useFetch.js";
-import axios from "axios";
+import { useState } from "react";
+
 import socket from "../../server";
-import RoomContainer from "../../components/RoomContainer/RoomContainer";
-import FriendSuggestion from "../FriendSuggestion/FriendSuggestion";
 import { IoChatbubbleSharp } from "react-icons/io5";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { FaCheck } from "react-icons/fa6";
@@ -93,12 +90,12 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
   };
 
   const DeletePending = (uid) => {
-    console.log("delete pending");
+    console.log("DeletePending");
 
     closeMenuInfo();
 
     socket.emit("deletePending", uid === null ? menuInfo.mid : uid, (res) => {
-      console.log("delete pending", res.ok.toString());
+      console.log("se deletePending: ", res.ok.toString());
       if (!res.ok) {
         console.log(res.error);
       }
@@ -138,7 +135,6 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
   return (
     <div className="flContainer">
       <div className="flSearch">
-        {" "}
         <input
           type="text"
           placeholder="Search"
@@ -156,7 +152,7 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
         <div className="flOnline">BLOCKED - {friendList.length}</div>
       ) : (
         <div className="flOnline">
-          {type} - {friendList.length}
+          PENDING - {friendList.length}
         </div>
       )}
 
@@ -171,7 +167,7 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
                   <div
                     className="flSideItem"
                     onContextMenu={(e) => handleContextMenu(e, each._id, each)}
-                    onClick={handleClick}
+                    onClick={()=>createRoom(each._id)}
                     key={each._id.toString()}
                   >
                     <div className="flSideProfile">

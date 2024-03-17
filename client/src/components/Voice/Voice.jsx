@@ -36,6 +36,7 @@ const Voice = ({ myuser, setJoined }) => {
     audioTrack = null;
     videoTrack = null;
     setUsers([]);
+
     client.on("user-published", handleUserPublished);
     client.on("user-left", handleUserLeft);
 
@@ -104,7 +105,6 @@ const Voice = ({ myuser, setJoined }) => {
   const initVolumeIndicator = async () => {
     AgoraRTC.setParameter("AUDIO_VOLUME_INDICATION_INTERVAL", 200);
     client.enableAudioVolumeIndicator();
-
     client.on("volume-indicator", handleVolume);
   };
 
@@ -125,7 +125,6 @@ const Voice = ({ myuser, setJoined }) => {
   /** Add User into UserList + Audio Play O + Video Play X */
   const handleUserPublished = async (user, mediaType) => {
     console.log("Handle User Published");
-    /**Video Comes First, then Audio Comes!! */
     await client.subscribe(user, mediaType);
     if (mediaType === "video") {
     }
@@ -234,45 +233,26 @@ const Voice = ({ myuser, setJoined }) => {
           <div className="vCams">
             {users.map((each, index) =>
               each.uid === myuser.name && camMuted ? (
-                <div
-                  style={{
-                    width: "300px",
-                    height: "230px",
-                    backgroundColor: "gray",
-                    marginTop: "5px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
+                <div className="vVid">
                   {" "}
-                  <div
-                   className="vDefault"
-                  >
+                  <div className="vDefault">
                     <img src={"/profile.jpeg"}></img>
                   </div>
+                  {each.volume > 50 && <div className="vGreenVid"></div>}
                 </div>
               ) : (
                 <div key={`${each.uid}-${index}`}>
                   {each.videoTrack ? (
-                    <VideoPlayer user={each} />
+                    <div className="vVid">
+                      <VideoPlayer user={each} />
+                      {each.volume > 50 && <div className="vGreenVid"></div>}
+                    </div>
                   ) : (
-                    <div
-                      style={{
-                        width: "300px",
-                        height: "230px",
-                        backgroundColor: "gray",
-                        marginTop: "5px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <div
-                           className="vDefault"
-                      >
+                    <div className="vVid">
+                      <div className="vDefault">
                         <img src={"/profile.jpeg"}></img>
                       </div>
+                      {each.volume > 50 && <div className="vGreenVid"></div>}
                     </div>
                   )}
                 </div>

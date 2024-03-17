@@ -9,7 +9,7 @@ import axios from "axios";
 import useFetch from "../../../hooks/useFetch.js";
 import ChatProfile from "../../../components/ChatProfile/ChatProfile.jsx";
 import Voice from "../../../components/Voice/Voice.jsx";
-import VoiceClone from "../../../components/Voice/Video.jsx";
+import VoiceClone from "../../../components/Voice/VoiceClone.jsx";
 
 const Chat = ({ user, id }) => {
   const [message, setMessage] = useState("");
@@ -37,7 +37,6 @@ const Chat = ({ user, id }) => {
     }
 
     /** when message got deleted */
-    socket.off("deleteMessage");
     socket.on("deleteMessage", (res) => {
       // console.log("delete Message", res);
       setMessageList((prevMessageList) =>
@@ -46,7 +45,6 @@ const Chat = ({ user, id }) => {
     });
 
     /** when new message comes */
-    socket.off("message");
     socket.on("message", (res) => {
       if (res.user.name === "system" && res.user.id) {
         if (res.user.id === "join") {
@@ -71,14 +69,12 @@ const Chat = ({ user, id }) => {
       });
     }
 
-    /** When leaving the page */
     return () => {
-      // console.log("Chat unmounted");
+      socket.off("deleteMessage");
+      socket.off("message");
       socket.emit("leaveRoom", id, (res) => {
-        if (res && res.ok) {
-          console.log("success leave", res);
-        } else {
-          console.log("failed", res);
+        if (!(res && res.ok)) {
+          alert("Error happened when leaving the chat");
         }
       });
     };
@@ -112,21 +108,18 @@ const Chat = ({ user, id }) => {
             <div
               className="cOtherInfo"
               style={joined ? { backgroundColor: "black" } : null}
-              onClick={()=>setJoined(!joined)}
+              onClick={() => setJoined(!joined)}
             >
               <div className="cProfile">
                 <div className="cImg">
                   <img src={"/profile.jpeg"}></img>
-                  <div
-                    className={other.online ? "cStatusOn" : "cStatusOff"}
-                  />
+                  <div className={other.online ? "cStatusOn" : "cStatusOff"} />
                 </div>
-                
               </div>
               <div className="cUsername">{other.name}</div>
             </div>
           )}
-          {joined && <Voice myuser={user} setJoined={setJoined} />}
+          {joined && <VoiceClone myuser={user} setJoined={setJoined} />}
           <MessageContainer
             messageList={messageList}
             setMessageList={setMessageList}
