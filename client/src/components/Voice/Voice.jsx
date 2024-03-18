@@ -199,7 +199,9 @@ const Voice = ({ myuser, setJoined }) => {
     {
       icon: <MdScreenShare size={25} />,
       id: "screen",
-      function: () => {},
+      function: () => {
+        console.log(users)
+      },
       style: {},
     },
     {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import InputField from "../../../components/InputField/InputField.jsx";
 import MessageContainer from "../../../components/MessageContainer/MessageContainer.js";
 import socket from "../../../server.js";
@@ -10,6 +10,7 @@ import useFetch from "../../../hooks/useFetch.js";
 import ChatProfile from "../../../components/ChatProfile/ChatProfile.jsx";
 import Voice from "../../../components/Voice/Voice.jsx";
 import VoiceClone from "../../../components/Voice/VoiceClone.jsx";
+import { CallContext } from "../../../context/CallContext.js";
 
 const Chat = ({ user, id }) => {
   const [message, setMessage] = useState("");
@@ -19,9 +20,22 @@ const Chat = ({ user, id }) => {
   const [isHere, setIsHere] = useState(false);
   const [joined, setJoined] = useState(false);
 
+  const {
+    micMuted,
+    camMuted,
+    audioTrack,
+    videoTrack,
+    users,
+    client,
+    dispatch,
+  } = useContext(CallContext);
+
   useEffect(() => {
     setMessageList([]);
     setIsHere(false);
+    if(audioTrack){
+      setJoined(true)
+    }
 
     /** Load previous messages */
     axios.get(`/api/v1/chats/${id}`).then((res) => {

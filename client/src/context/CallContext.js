@@ -1,6 +1,7 @@
 import { createContext, useReducer } from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
 AgoraRTC.setLogLevel(4);
+AgoraRTC.setParameter("AUDIO_VOLUME_INDICATION_INTERVAL", 200);
 
 const INITIAL_STATE = {
   micMuted: false,
@@ -14,57 +15,49 @@ const INITIAL_STATE = {
   }),
 };
 
-const APP_ID = process.env.REACT_APP_APP_ID;
-const TOKEN = process.env.REACT_APP_TOKEN;
-const CHANNEL = process.env.REACT_APP_CHANNEL;
-
 export const CallContext = createContext(INITIAL_STATE);
 
-const CallReducer =  (state, action) => {
+const CallReducer = (state, action) => {
   switch (action.type) {
     case "INIT":
-      // Reset tracks and users
-      console.log("-")
       const newState = {
         ...state,
         audioTrack: null,
         videoTrack: null,
         users: [],
       };
-
-      console.log("-")
-    //   newState.client.on("user-published", handleUserPublished);
-      console.log("-")
-      newState.client
-        .join(APP_ID, CHANNEL, TOKEN, action.payload.name)
-        .then((uid) =>
-          Promise.all([AgoraRTC.createMicrophoneAudioTrack(), uid])
-        )
-        .then(([track, uid]) => {
-            console.log("-")
-          newState.audioTrack = track;
-          newState.users = [
-            ...state.users,
-            {
-              uid,
-              audioTrack: track,
-              volume: 0,
-            },
-          ];
-          console.log("-")
-          newState.client.publish(track);
-          console.log("-")
-        })
-        .catch((error) => {
-          console.error("Error during initialization:", error);
-        });
-        console.log("-")
       return newState;
 
+    case "AUDIOTRACK":
+      return {
+        ...state,
+        audioTrack: action.payload.track,
+        users: [
+          ...state.users,
+          {
+            uid: action.payload.uid,
+            audioTrack: action.payload.track,
+            volume: 0,
+          },
+        ],
+      };
+
+    case "VIDEOTRACK":
+      return {
+        ...state,
+        videoTrack: action.payload.track,
+        users: state.users.filter((user) => {
+          if (user.uid === action.payload.uid) {
+            user.videoTrack = action.payload.track;
+          }
+          return true;
+        }),
+        camMuted: false,
+      };
     case "HANDLE_MIC":
       const newMicMuted = !state.micMuted;
-      if (newMicMuted && state.audioTrack) {
-        state.audioTrack.setMuted(true);
+      if (state.audioTrack) {
+        state.audioTrack.setMuted(newMicMuted);
       }
       return {
         ...state,
@@ -93,49 +86,80 @@ const CallReducer =  (state, action) => {
         users: updatedUsers,
       };
 
-    //////
     case "HANDLE_USER_PUBLISHED":
       const { user, mediaType } = action.payload;
-      const handleUserPublished =  (user, mediaType) => {
-        console.log("Handle User Published");
-        console.log(user, mediaType)
 
-         state.client.subscribe(user, mediaType);
+      if (mediaType === "video") {
+        console.log("hup: ", user);
+        const newUser = {
+          videoTrack: user.videoTrack,
+        };
+        return {
+          ...state,
+          users: state.users.filter((each) => {
+            if (each.uid === user.uid) {
+              each.videoTrack = newUser.videoTrack;
+            }
+            return true;
+          }),
+        };
+      }
 
-        if (mediaType === "video") {
-          // Handle video logic here if needed
-        }
+      if (mediaType === "audio") {
+        user.volume = 0;
+        user.audioTrack.play();
+        const updatedUsers = state.users.some((each) => each.uid === user.uid)
+          ? state.users
+          : [...state.users, user];
+        return {
+          ...state,
+          users: updatedUsers,
+        };
+      }
 
-        if (mediaType === "audio") {
-          user.volume = 0;
-          user.audioTrack.play();
-          const updatedUsers = state.users.some((each) => each.uid === user.uid)
-            ? state.users
-            : [...state.users, user];
+      return state;
+    case "CLEAN":
+      state.audioTrack.stop();
+      state.audioTrack.close();
+      if (state.videoTrack !== null) {
+        state.videoTrack.stop();
+        state.videoTrack.close();
+      }
 
-            console.log("updatedUsers: ", updatedUsers)
-          return {
-            ...state,
-            users: updatedUsers,
-          };
-        }
+      return {
+        ...state,
+        audioTrack: null,
+        videoTrack: null,
+        micMuted: false,
+        camMuted: true,
       };
 
-       handleUserPublished(user, mediaType);
-      return state;
-
-    ///////////////
-    default:
+    case "HANDLE_CAMERA":
+      // state.videoTrack.stop();
+      // state.videoTrack.close();
+      state.videoTrack.setEnabled(state.camMuted)
+      return {
+        ...state,
+        // videoTrack: state.videoTrack,
+        camMuted: !state.camMuted,
+      };
+    case "TOGGLE_OTHER_CAMERA":
+      return{
+        ...state,
+        users: state.users.filter((user)=>{
+          if(user.uid === "a"){
+            user.videoTrack = null;
+          }
+          return true
+        })
+      }
+      default:
       return state;
   }
 };
 
 export const CallContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(CallReducer, INITIAL_STATE);
-
-  //   useEffect(() => {
-  //     localStorage.setItem("user", JSON.stringify(state.user));
-  //   }, [state.user]);
 
   return (
     <CallContext.Provider
@@ -153,7 +177,3 @@ export const CallContextProvider = ({ children }) => {
     </CallContext.Provider>
   );
 };
-
-///// /
-//d/d//d/d//d/d/
-//d/d/

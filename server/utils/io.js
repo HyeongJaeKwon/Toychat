@@ -336,6 +336,16 @@ export default function (io) {
       }
     });
 
+    socket.on("camera", async ( othername, callback) => {
+      try{
+        const other = await User.findOne({ name: othername });
+        io.to(other.token).emit("camera")
+        callback({ ok: true });
+      }catch(err){
+        callback({ok: false, error: err.message})
+      }
+    })
+
     socket.on("disconnect", async () => {
       console.log(socket.id, " is disconnected!");
       try {
