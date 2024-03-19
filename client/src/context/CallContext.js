@@ -91,6 +91,7 @@ const CallReducer = (state, action) => {
 
       if (mediaType === "video") {
         console.log("hup: ", user);
+        // console.log(JSON.stringify(user.videoTrack))
         const newUser = {
           videoTrack: user.videoTrack,
         };
@@ -134,10 +135,23 @@ const CallReducer = (state, action) => {
         camMuted: true,
       };
 
+      case "UP":
+        return {
+          ...state,
+          users: state.users.map((each) => {
+            if (each.uid === action.payload.uid) {
+              return action.payload
+            }
+            return each;
+          }),
+        };
+
     case "HANDLE_CAMERA":
-      // state.videoTrack.stop();
-      // state.videoTrack.close();
+     
       state.videoTrack.setEnabled(state.camMuted)
+
+      // if( !state.camMuted) state.videoTrack.stop();
+      // state.videoTrack.close();
       return {
         ...state,
         // videoTrack: state.videoTrack,
@@ -146,8 +160,8 @@ const CallReducer = (state, action) => {
     case "TOGGLE_OTHER_CAMERA":
       return{
         ...state,
-        users: state.users.filter((user)=>{
-          if(user.uid === "a"){
+        users: state.users.filter((user, index)=>{
+          if(index === 1){
             user.videoTrack = null;
           }
           return true

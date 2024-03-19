@@ -5,9 +5,25 @@ export const VideoPlayer = ({ user }) => {
   const ref = useRef();
 
   useEffect(() => {
-    if (user.videoTrack) {
-      user.videoTrack.play(ref.current);
-    }
+    // console.log(user.uid)
+     
+     try{
+      const playVid = async () => {
+        // if(!user.videoTrack){
+          // console.log("playvid2")
+          console.log(user.videoTrack.getVideoElementVisibleStatus())
+          await user.videoTrack.play(ref.current);
+        // }
+      }
+      // console.log("playvid")
+      playVid()
+     }catch(err){
+      console.log("play error")
+      console.log(err.message)
+     }
+    
+    
+ 
   }, [user]);
 
   return (

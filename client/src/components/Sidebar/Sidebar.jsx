@@ -67,6 +67,10 @@ const Sidebar = ({ user, setUser, menuInfo, setMenuInfo }) => {
           setMenuInfo={setMenuInfo}
         />
       </div>
+      <div className="tUserItem" >
+  <img src={user.avatar} alt="User Avatar" className="tUserAvatar" />
+  <div className="tUserName">{user.username}</div>
+</div>
     </div>
   );
 };

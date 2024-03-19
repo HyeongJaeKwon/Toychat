@@ -30,13 +30,19 @@ const VoiceClone = ({ myuser, setJoined }) => {
 
   useEffect(() => {
     if (!audioTrack) {
+      console.log("ue")
       socket.on("camera",(res)=>{
         // users[1].videoTrack = null
         console.log("so camera")
-        dispatch({type:"TOGGLE_OTHER_CAMERA"})
+        if(res === "on") {
+          // dispatch({type:"TOGGLE_OTHER_CAMERA"})
+        }else{
+          dispatch({type:"TOGGLE_OTHER_CAMERA"})
+        }
       } )
       dispatch({ type: "INIT", payload: myuser });
       client.on("user-published", handleUserPublished);
+      client.on("user-unpublished", handleUserUnpublished);
       client.on("user-left", handleUserLeft);
       client
         .join(APP_ID, CHANNEL, TOKEN, myuser.name)
@@ -55,7 +61,9 @@ const VoiceClone = ({ myuser, setJoined }) => {
   }, [setJoined]);
 
   const handleCancel = () => {
+    console.log("hc")
     dispatch({ type: "CLEAN" });
+    socket.off("camera");
     client.off("user-published", handleUserPublished);
     client.off("user-left", handleUserLeft);
     client.off("volume-indicator", handleVolume);
@@ -66,17 +74,20 @@ const VoiceClone = ({ myuser, setJoined }) => {
 
   /** client.on("volume-indicator") + handleVolume */
   const initVolumeIndicator = async () => {
+    console.log("iv")
     client.enableAudioVolumeIndicator();
     client.on("volume-indicator", handleVolume);
   };
 
   /** Set that user's volume from users */
   const handleVolume = (volumes) => {
+    // console.log("hv")
     dispatch({ type: "HANDLE_VOLUME", payload: volumes });
   };
 
   /** Add User into UserList + Audio Play O + Video Play X */
   const handleUserPublished = async (user, mediaType) => {
+    console.log("hp")
     await client.subscribe(user, mediaType);
     dispatch({
       type: "HANDLE_USER_PUBLISHED",
@@ -84,32 +95,59 @@ const VoiceClone = ({ myuser, setJoined }) => {
     });
   };
 
+  const handleUserUnpublished = async (user, mediaType) => {
+    console.log("huup: ", user, mediaType)
+    // await client.subscribe(user, mediaType);
+    if( mediaType === "video"){
+      dispatch({type:"UP", payload: user})
+    }
+    // await client.subscribe(user, mediaType);
+    // dispatch({
+    //   type: "HANDLE_USER_PUBLISHED",
+    //   payload: { user: user, mediaType: mediaType },
+    // });
+  };
+
   const handleUserLeft = (user) => {
+    console.log("hl")
     dispatch({ type: "HANDLE_USER_LEFT", payload: user });
   };
 
   const handleCamera = () => {
     if (videoTrack === null) {
-      console.log("videoTrack: null");
+      console.log("hcn")
+    
       Promise.all([AgoraRTC.createCameraVideoTrack(), myuser.name]).then(
-        ([track, uid]) => {
+        async ([track, uid]) => {
+        
           dispatch({ type: "VIDEOTRACK", payload: { uid: uid, track: track } });
+          // await track.play()
           client.publish(track);
         }
       );
     } else {
-      console.log("videoTrack: not null");
+      console.log("hcnn")
       dispatch({ type: "HANDLE_CAMERA" });
-      if (users[1])
-        socket.emit("camera", users[1].uid, (res) => {
-          console.log("se camera: ", res);
-        });
+      if (users[1]){
+        // if( camMuted){
+        //   socket.emit("camera", {othername: users[1].uid, status: "on"}, (res) => {
+        //     console.log("se camera: ", res);
+        //   });
+        // }else{
+        //   socket.emit("camera", {othername: users[1].uid, status: "off"}, (res) => {
+        //     console.log("se camera: ", res);
+        //   });
+        // }
+   
+      }
+    
 
       // client.publish(videoTrack);
     }
   };
 
   const handleMic = () => {
+    console.log("hm")
     dispatch({ type: "HANDLE_MIC" });
   };
 

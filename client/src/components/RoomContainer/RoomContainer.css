@@ -1,6 +1,7 @@
 .rcContainer {
   display: flex;
   flex-direction: column;
+  height: calc(100vh - 200px);
   /* width: 200px; */
   /* overflow: hidden; */
   /* background-color: blue; */

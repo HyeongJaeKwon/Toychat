@@ -336,10 +336,11 @@ export default function (io) {
       }
     });
 
-    socket.on("camera", async ( othername, callback) => {
+    socket.on("camera", async ( data, callback) => {
       try{
+        const {othername, status} = data;
         const other = await User.findOne({ name: othername });
-        io.to(other.token).emit("camera")
+        io.to(other.token).emit("camera", status)
         callback({ ok: true });
       }catch(err){
         callback({ok: false, error: err.message})
