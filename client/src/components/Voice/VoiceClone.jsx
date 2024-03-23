@@ -128,21 +128,7 @@ const VoiceClone = ({ myuser, setJoined }) => {
     } else {
       console.log("hcnn")
       dispatch({ type: "HANDLE_CAMERA" });
-      if (users[1]){
-        // if( camMuted){
-        //   socket.emit("camera", {othername: users[1].uid, status: "on"}, (res) => {
-        //     console.log("se camera: ", res);
-        //   });
-        // }else{
-        //   socket.emit("camera", {othername: users[1].uid, status: "off"}, (res) => {
-        //     console.log("se camera: ", res);
-        //   });
-        // }
-   
-      }
-    
 
-      // client.publish(videoTrack);
     }
   };
 

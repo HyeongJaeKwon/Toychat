@@ -7,7 +7,7 @@ import Test from "./pages/Test/Test.jsx";
 import Friend from "./pages/Friend/Friend.jsx";
 import C from "./pages/C/C.jsx";
 import Voice from "./components/Voice/Voice.jsx";
-import { ListContext } from "./context/ListContext.js";
+import { ListContext } from "./context/ListContext.jsx";
 import axios from "axios";
 
 function App() {

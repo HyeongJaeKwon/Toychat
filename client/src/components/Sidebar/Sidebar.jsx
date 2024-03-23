@@ -1,21 +1,27 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 import { FaUserFriends } from "react-icons/fa";
 import { GiSpeedBoat } from "react-icons/gi";
 import { AiFillShop } from "react-icons/ai";
 import RoomContainer from "../RoomContainer/RoomContainer";
+import MyInfo from "../MyInfo/MyInfo";
+import { ModalContext } from "../../context/ModalContext";
 
 const Sidebar = ({ user, setUser, menuInfo, setMenuInfo }) => {
   const navigate = useNavigate();
+
+  const {dispatch} = useContext(ModalContext)
 
   const handleClick = (e) => {
     e.preventDefault();
     // setMenu(false);
     setMenuInfo((prev) => ({ ...prev, isOpen: false }));
+    dispatch({type:"CLOSE"})
   };
 
   const moveTo = (address) => {
+    dispatch({type:"CLOSE"})
     navigate(`/${address}`);
   };
 
@@ -48,7 +54,7 @@ const Sidebar = ({ user, setUser, menuInfo, setMenuInfo }) => {
               <div
                 key={each.title}
                 className="fsSideItem"
-                onClick={() => moveTo(each.address)}
+                onClick={() => {  dispatch({type:"CLOSE"});moveTo(each.address)}}
               >
                 {each.icon}
                 {each.title}
@@ -67,10 +73,7 @@ const Sidebar = ({ user, setUser, menuInfo, setMenuInfo }) => {
           setMenuInfo={setMenuInfo}
         />
       </div>
-      <div className="tUserItem" >
-  <img src={user.avatar} alt="User Avatar" className="tUserAvatar" />
-  <div className="tUserName">{user.username}</div>
-</div>
+      <MyInfo user={user} />
     </div>
   );
 };

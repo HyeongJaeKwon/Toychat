@@ -10,7 +10,7 @@ import useFetch from "../../../hooks/useFetch.js";
 import ChatProfile from "../../../components/ChatProfile/ChatProfile.jsx";
 import Voice from "../../../components/Voice/Voice.jsx";
 import VoiceClone from "../../../components/Voice/VoiceClone.jsx";
-import { CallContext } from "../../../context/CallContext.js";
+import { CallContext } from "../../../context/CallContext.jsx";
 
 const Chat = ({ user, id }) => {
   const [message, setMessage] = useState("");

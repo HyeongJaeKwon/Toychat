@@ -1,0 +1,134 @@
+.miContainer {
+  display: flex;
+  align-items: center;
+  padding: 0px;
+  cursor: pointer;
+  background-color: rgb(29, 29, 29);
+  padding: 3px 7px;
+}
+
+.miMe:hover {
+  background-color: rgb(153, 153, 153);
+}
+/* .miMe:hover .hello {
+top:0;
+opacity: 1;
+}
+.user-container{
+  width: 200px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc;
+  overflow: hidden;
+}
+.hello{
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  transition: top 0.5s ease;
+  opacity: 0;
+} */
+.miMe {
+  display: flex;
+  padding: 5px 2px;
+ width: 100%;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.miProfile {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  /* margin: 0px 0px; */
+  margin-right: 10px;
+  /* background-color: red; */
+}
+
+/* .miProfile:hover{
+    background-color: rgb(152, 152, 152);
+} */
+
+.miUserName {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: transparent;
+  height: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.miProfile img {
+  width: 32px;
+  /* margin: 0px 0px; */
+  border-radius: 50px;
+  margin-right: 10px;
+}
+
+.img {
+  width: 32px;
+  border-radius: 50px;
+  /* margin-right: 10px; */
+  position: relative;
+  /* background-color: purple; */
+}
+
+.miStatus {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+}
+
+.miStatusWord {
+  color: whitesmoke;
+  font-size: 12px;
+}
+
+.miOptions {
+  display: flex;
+  justify-content: space-between;
+  color: whitesmoke;
+  margin-left: auto;
+}
+
+.miStatusOn {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: green;
+  position: absolute;
+  bottom: 02px; /* Move the rectangle up by half its height */
+  right: 0px;
+}
+.miStatusOff {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: black;
+  position: absolute;
+  bottom: 02px; /* Move the rectangle up by half its height */
+  right: 0px;
+}
+
+
+.miOption {
+  width: 30px;
+  height: 30px;
+  background-color: transparent;
+  margin-right: 2px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0px 0px;
+}
+
+.miOption:hover {
+  background-color: rgb(137, 137, 137);
+}

@@ -65,11 +65,14 @@
 }
 
 
+
+
 .tUserItem {
   display: flex;
   align-items: center;
   padding: 10px;
   cursor: pointer;
+  background-color: rgb(29, 29, 29);
   /* position: absolute;
   bottom: 0;
   left: 0; */
@@ -89,4 +92,33 @@
 .tUserName {
   color: white;
   font-size: 14px;
+  font-weight: 500;
+}
+
+
+.rcProfile img{
+  width: 32px;
+  border-radius: 50px;
+  margin-right: 10px;
+}
+
+
+.sStatus{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+}
+
+.sStatusWord{
+  color: whitesmoke;
+  font-size: 12px;
+
+}
+
+.sOptions{
+  display: flex;
+  justify-content: space-between;
+  color: whitesmoke;
+  margin-left: auto;
 }

@@ -3,24 +3,37 @@ import "./RoomContainer.css";
 import { useContext } from "react";
 import axios from "axios";
 import { ListContext } from "../../context/ListContext";
+import { ModalContext } from "../../context/ModalContext";
 
 const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
   const navigate = useNavigate();
   const { chatRoomList, dispatch } = useContext(ListContext);
   const location = useLocation();
   const roomid = location.pathname.split("/")[2];
+  const { isOpen, dispatch: modalDispatch } = useContext(ModalContext);
 
   const moveToChat = (rid) => {
+    if (isOpen) modalDispatch({ type: "CLOSE" });
     navigate(`/chat/${rid}`);
   };
 
   const handleCall = (e) => {
     e.preventDefault();
+    if (isOpen) modalDispatch({ type: "CLOSE" });
     setMenuInfo((prev) => ({ ...prev, isOpen: false }));
   };
 
   const handleContextMenu = (event, roomid) => {
     event.preventDefault();
+    modalDispatch({
+      type: "CLICK",
+      payload: {
+        mid: roomid,
+        x: event.clientX,
+        y: event.clientY,
+        mType: "RoomContainer",
+      },
+    });
     setMenuInfo({
       isOpen: true,
       mid: roomid,
@@ -31,6 +44,7 @@ const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
 
   const handleClick = (e) => {
     e.preventDefault();
+    if (isOpen) modalDispatch({ type: "CLOSE" });
     setMenuInfo((prev) => ({ ...prev, isOpen: false }));
   };
 
