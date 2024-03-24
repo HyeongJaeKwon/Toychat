@@ -13,7 +13,6 @@ const MessageContainer = ({
   rid,
   user,
   other,
-  setJoined,
 }) => {
   const [style, setStyle] = useState("");
   const messagesEndRef = useRef(null);
@@ -68,12 +67,6 @@ const MessageContainer = ({
         if (isOpen) modalDispatch({ type: "CLOSE" });
       }
     });
-  };
-
-  /**TEMP TEMP TEMP TEMP */
-  const handleCall = (e) => {
-    e.preventDefault();
-    setJoined(true);
   };
 
   return (
@@ -151,7 +144,7 @@ const MessageContainer = ({
               ) : index === 0 ||
                 messageList[index - 1].user.name == user.name ||
                 messageList[index - 1].user.name === "system" ? (
-                <div className="bigMessage" onClick={handleCall}>
+                <div className="bigMessage">
                   <img
                     src="/profile.jpeg"
                     className="profile-image"

@@ -19,6 +19,7 @@ const UserSchema = new mongoose.Schema({
   pending: [
     { id: { type: mongoose.Schema.ObjectId, ref: "User" }, out: Boolean },
   ],
+  servers: [{ type: mongoose.Schema.ObjectId, ref: "Server" }],
 });
 
 export default mongoose.model("User", UserSchema);

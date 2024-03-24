@@ -4,6 +4,7 @@ AgoraRTC.setLogLevel(4);
 AgoraRTC.setParameter("AUDIO_VOLUME_INDICATION_INTERVAL", 200);
 
 const INITIAL_STATE = {
+  joined: false,
   micMuted: false,
   camMuted: true,
   audioTrack: null,
@@ -22,6 +23,7 @@ const CallReducer = (state, action) => {
     case "INIT":
       const newState = {
         ...state,
+        joined: true,
         audioTrack: null,
         videoTrack: null,
         users: [],
@@ -120,8 +122,11 @@ const CallReducer = (state, action) => {
 
       return state;
     case "CLEAN":
-      state.audioTrack.stop();
-      state.audioTrack.close();
+      if (state.audioTrack !== null) {
+        state.audioTrack.stop();
+        state.audioTrack.close();
+      }
+
       if (state.videoTrack !== null) {
         state.videoTrack.stop();
         state.videoTrack.close();
@@ -129,26 +134,26 @@ const CallReducer = (state, action) => {
 
       return {
         ...state,
+        joined: false,
         audioTrack: null,
         videoTrack: null,
         micMuted: false,
         camMuted: true,
       };
 
-      case "UP":
-        return {
-          ...state,
-          users: state.users.map((each) => {
-            if (each.uid === action.payload.uid) {
-              return action.payload
-            }
-            return each;
-          }),
-        };
+    case "UP":
+      return {
+        ...state,
+        users: state.users.map((each) => {
+          if (each.uid === action.payload.uid) {
+            return action.payload;
+          }
+          return each;
+        }),
+      };
 
     case "HANDLE_CAMERA":
-     
-      state.videoTrack.setEnabled(state.camMuted)
+      state.videoTrack.setEnabled(state.camMuted);
 
       // if( !state.camMuted) state.videoTrack.stop();
       // state.videoTrack.close();
@@ -158,16 +163,16 @@ const CallReducer = (state, action) => {
         camMuted: !state.camMuted,
       };
     case "TOGGLE_OTHER_CAMERA":
-      return{
+      return {
         ...state,
-        users: state.users.filter((user, index)=>{
-          if(index === 1){
+        users: state.users.filter((user, index) => {
+          if (index === 1) {
             user.videoTrack = null;
           }
-          return true
-        })
-      }
-      default:
+          return true;
+        }),
+      };
+    default:
       return state;
   }
 };
@@ -178,6 +183,7 @@ export const CallContextProvider = ({ children }) => {
   return (
     <CallContext.Provider
       value={{
+        joined: state.joined,
         micMuted: state.micMuted,
         camMuted: state.camMuted,
         audioTrack: state.audioTrack,

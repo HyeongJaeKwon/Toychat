@@ -4,6 +4,7 @@ import { useContext } from "react";
 import axios from "axios";
 import { ListContext } from "../../context/ListContext";
 import { ModalContext } from "../../context/ModalContext";
+import { CallContext } from "../../context/CallContext";
 
 const RoomContainer = ({ user, setUser }) => {
   const navigate = useNavigate();
@@ -18,15 +19,23 @@ const RoomContainer = ({ user, setUser }) => {
     dispatch: modalDispatch,
   } = useContext(ModalContext);
 
+  const {
+    joined,
+    micMuted,
+    camMuted,
+    audioTrack,
+    videoTrack,
+    users,
+    client,
+    dispatch: callDispatch,
+  } = useContext(CallContext);
+
   const moveToChat = (rid) => {
     if (isOpen) modalDispatch({ type: "CLOSE" });
     navigate(`/chat/${rid}`);
   };
 
-  const handleCall = (e) => {
-    e.preventDefault();
-    if (isOpen) modalDispatch({ type: "CLOSE" });
-  };
+
 
   const handleContextMenu = (event, roomid) => {
     event.preventDefault();
@@ -65,6 +74,12 @@ const RoomContainer = ({ user, setUser }) => {
   };
 
   const handleChangeName = (e) => {};
+
+  const handleCall = () => {
+    callDispatch({ type: "INIT" });
+    if (isOpen) modalDispatch({ type: "CLOSE" });
+    navigate(`/chat/${mid}`);
+  };
 
   return (
     <div className="rcContainer">

@@ -17,7 +17,7 @@ const APP_ID = process.env.REACT_APP_APP_ID;
 const TOKEN = process.env.REACT_APP_TOKEN;
 const CHANNEL = process.env.REACT_APP_CHANNEL;
 
-const VoiceClone = ({ myuser, setJoined }) => {
+const VoiceClone = ({ myuser }) => {
   const {
     micMuted,
     camMuted,
@@ -30,16 +30,16 @@ const VoiceClone = ({ myuser, setJoined }) => {
 
   useEffect(() => {
     if (!audioTrack) {
-      console.log("ue")
-      socket.on("camera",(res)=>{
-        // users[1].videoTrack = null
-        console.log("so camera")
-        if(res === "on") {
-          // dispatch({type:"TOGGLE_OTHER_CAMERA"})
-        }else{
-          dispatch({type:"TOGGLE_OTHER_CAMERA"})
-        }
-      } )
+      console.log("ue");
+      // socket.on("camera",(res)=>{
+      //   // users[1].videoTrack = null
+      //   console.log("so camera")
+      //   if(res === "on") {
+      //     // dispatch({type:"TOGGLE_OTHER_CAMERA"})
+      //   }else{
+      //     dispatch({type:"TOGGLE_OTHER_CAMERA"})
+      //   }
+      // } )
       dispatch({ type: "INIT", payload: myuser });
       client.on("user-published", handleUserPublished);
       client.on("user-unpublished", handleUserUnpublished);
@@ -58,23 +58,28 @@ const VoiceClone = ({ myuser, setJoined }) => {
           console.error("Error during initialization:", error);
         });
     }
-  }, [setJoined]);
+  }, []);
 
   const handleCancel = () => {
-    console.log("hc")
-    dispatch({ type: "CLEAN" });
-    socket.off("camera");
-    client.off("user-published", handleUserPublished);
-    client.off("user-left", handleUserLeft);
-    client.off("volume-indicator", handleVolume);
-    client.unpublish();
-    client.leave();
-    setJoined(false);
+    try {
+      console.log("hc");
+      dispatch({ type: "CLEAN" });
+      // socket.off("camera");
+      client.off("user-published", handleUserPublished);
+      client.off("user-unpublished", handleUserUnpublished);
+      client.off("user-left", handleUserLeft);
+      client.off("volume-indicator", handleVolume);
+      client.unpublish();
+      client.leave();
+      // setJoined(false);
+    } catch (err) {
+      console.log(err.message);
+    }
   };
 
   /** client.on("volume-indicator") + handleVolume */
   const initVolumeIndicator = async () => {
-    console.log("iv")
+    console.log("iv");
     client.enableAudioVolumeIndicator();
     client.on("volume-indicator", handleVolume);
   };
@@ -87,7 +92,7 @@ const VoiceClone = ({ myuser, setJoined }) => {
 
   /** Add User into UserList + Audio Play O + Video Play X */
   const handleUserPublished = async (user, mediaType) => {
-    console.log("hp")
+    console.log("hp");
     await client.subscribe(user, mediaType);
     dispatch({
       type: "HANDLE_USER_PUBLISHED",
@@ -96,10 +101,10 @@ const VoiceClone = ({ myuser, setJoined }) => {
   };
 
   const handleUserUnpublished = async (user, mediaType) => {
-    console.log("huup: ", user, mediaType)
+    console.log("huup: ", user, mediaType);
     // await client.subscribe(user, mediaType);
-    if( mediaType === "video"){
-      dispatch({type:"UP", payload: user})
+    if (mediaType === "video") {
+      dispatch({ type: "UP", payload: user });
     }
     // await client.subscribe(user, mediaType);
     // dispatch({
@@ -109,31 +114,29 @@ const VoiceClone = ({ myuser, setJoined }) => {
   };
 
   const handleUserLeft = (user) => {
-    console.log("hl")
+    console.log("hl");
     dispatch({ type: "HANDLE_USER_LEFT", payload: user });
   };
 
   const handleCamera = () => {
     if (videoTrack === null) {
-      console.log("hcn")
-    
+      console.log("hcn");
+
       Promise.all([AgoraRTC.createCameraVideoTrack(), myuser.name]).then(
         async ([track, uid]) => {
-        
           dispatch({ type: "VIDEOTRACK", payload: { uid: uid, track: track } });
           // await track.play()
           client.publish(track);
         }
       );
     } else {
-      console.log("hcnn")
+      console.log("hcnn");
       dispatch({ type: "HANDLE_CAMERA" });
-
     }
   };
 
   const handleMic = () => {
-    console.log("hm")
+    console.log("hm");
     dispatch({ type: "HANDLE_MIC" });
   };
 

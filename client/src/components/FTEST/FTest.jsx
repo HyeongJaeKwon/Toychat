@@ -9,6 +9,7 @@ import { FaCheck } from "react-icons/fa6";
 import { RxCross1 } from "react-icons/rx";
 import { FaPersonCirclePlus } from "react-icons/fa6";
 import { ModalContext } from "../../context/ModalContext";
+import { CallContext } from "../../context/CallContext";
 
 const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
   const [out, setOut] = useState(false);
@@ -25,6 +26,17 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
   const filteredUsers = friendList.filter((user) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const {
+    joined,
+    micMuted,
+    camMuted,
+    audioTrack,
+    videoTrack,
+    users,
+    client,
+    dispatch: callDispatch,
+  } = useContext(CallContext);
 
   const createRoom = (e, uid) => {
     e.stopPropagation();
@@ -137,6 +149,19 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
   const handleInputChange = (event) => {
     setSearchQuery(event.target.value);
   };
+
+  const call = (e) => {
+ 
+    socket.emit("createRoom", {otheruid: mid}, (res) => {
+      if (!res.ok) {
+        console.log("CREATE ROOM FAILED: ", res.error);
+      } else {
+        callDispatch({ type: "INIT" });
+        navigate(`/chat/${res.room._id.toString()}`);
+      }
+    });
+    closeMenuInfo();
+  }
 
   return (
     <div className="flContainer">
@@ -325,6 +350,9 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
                   onClick={(e) => createRoom(e, null)}
                 >
                   Send Message
+                </div>
+                <div className="contextMenuOption" onClick={(e) => call(e)}>
+                  Call
                 </div>
                 <div className="contextMenuOption" onClick={() => Block(null)}>
                   Block

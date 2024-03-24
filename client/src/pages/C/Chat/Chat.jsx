@@ -11,6 +11,7 @@ import ChatProfile from "../../../components/ChatProfile/ChatProfile.jsx";
 import Voice from "../../../components/Voice/Voice.jsx";
 import VoiceClone from "../../../components/Voice/VoiceClone.jsx";
 import { CallContext } from "../../../context/CallContext.jsx";
+import { ModalContext } from "../../../context/ModalContext.jsx";
 
 const Chat = ({ user, id }) => {
   const [message, setMessage] = useState("");
@@ -18,9 +19,17 @@ const Chat = ({ user, id }) => {
   const navigate = useNavigate();
   const [other, setOther] = useState(null);
   const [isHere, setIsHere] = useState(false);
-  const [joined, setJoined] = useState(false);
 
   const {
+    isOpen,
+    mid,
+    mPosition,
+    mType,
+    dispatch: modalDispatch,
+  } = useContext(ModalContext);
+
+  const {
+    joined,
     micMuted,
     camMuted,
     audioTrack,
@@ -33,9 +42,6 @@ const Chat = ({ user, id }) => {
   useEffect(() => {
     setMessageList([]);
     setIsHere(false);
-    if(audioTrack){
-      setJoined(true)
-    }
 
     /** Load previous messages */
     axios.get(`/api/v1/chats/${id}`).then((res) => {
@@ -106,11 +112,23 @@ const Chat = ({ user, id }) => {
     setMessage("");
   };
 
-  // const leaveRoom = async () => {
-  //   socket.emit("leaveRoom", user, id, (res) => {
-  //     if (res.ok) navigate("/");
-  //   });
-  // };
+  const handleContextMenu = (e, othername) => {
+    e.preventDefault();
+    modalDispatch({
+      type: "CLICK",
+      payload: {
+        mid: othername,
+        x: e.clientX,
+        y: e.clientY,
+        mType: "ChatOtherInfo",
+      },
+    });
+  };
+
+  const handleCall = () => {
+    dispatch({ type: "INIT" });
+    if (isOpen) modalDispatch({ type: "CLOSE" });
+  };
 
   return (
     <div>
@@ -122,7 +140,7 @@ const Chat = ({ user, id }) => {
             <div
               className="cOtherInfo"
               style={joined ? { backgroundColor: "black" } : null}
-              onClick={() => setJoined(!joined)}
+              onContextMenu={(e) => handleContextMenu(e, other.name)}
             >
               <div className="cProfile">
                 <div className="cImg">
@@ -133,14 +151,13 @@ const Chat = ({ user, id }) => {
               <div className="cUsername">{other.name}</div>
             </div>
           )}
-          {joined && <VoiceClone myuser={user} setJoined={setJoined} />}
+          {joined && <VoiceClone myuser={user} />}
           <MessageContainer
             messageList={messageList}
             setMessageList={setMessageList}
             rid={id}
             user={user}
             other={other}
-            setJoined={setJoined}
           />
           <InputField
             message={message}
@@ -148,6 +165,44 @@ const Chat = ({ user, id }) => {
             sendMessage={sendMessage}
             isHere={isHere}
           />
+          {isOpen && mType === "ChatOtherInfo" && (
+            <div
+              className="contextMenu"
+              style={{
+                top: mPosition.y,
+                left: mPosition.x,
+              }}
+            >
+              <div className="contextMenuOption" onClick={handleCall}>
+                Call
+              </div>
+
+              <div
+                className="contextMenuOption"
+                onClick={() => {
+                  if (isOpen) modalDispatch({ type: "CLOSE" });
+                }}
+              >
+                Profile
+              </div>
+              <div
+                className="contextMenuOption"
+                onClick={() => {
+                  if (isOpen) modalDispatch({ type: "CLOSE" });
+                }}
+              >
+                Block
+              </div>
+              <div
+                className="contextMenuOption"
+                onClick={() => {
+                  if (isOpen) modalDispatch({ type: "CLOSE" });
+                }}
+              >
+                Close
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
