@@ -1,9 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import socket from "./server.js";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-import Test from "./pages/Test/Test.jsx";
-
 import Friend from "./pages/Friend/Friend.jsx";
 import C from "./pages/C/C.jsx";
 import Voice from "./components/Voice/Voice.jsx";

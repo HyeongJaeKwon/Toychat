@@ -45,10 +45,10 @@ export const ModalContextProvider = ({ children }) => {
   return (
     <ModalContext.Provider
       value={{
-        chatRoomList: state.chatRoomList,
-        friendList: state.friendList,
-        pendingList: state.pendingList,
-        blockedList: state.blockedList,
+        isOpen: state.isOpen,
+        mid: state.mid,
+        mPosition: state.mPosition,
+        mType: state.mType,
         dispatch,
       }}
     >

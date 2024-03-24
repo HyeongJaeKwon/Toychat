@@ -53,7 +53,7 @@ const Sidebar = ({ user, setUser, menuInfo, setMenuInfo }) => {
             return (
               <div
                 key={each.title}
-                className="fsSideItem"
+                className="sbSideItem"
                 onClick={() => {  dispatch({type:"CLOSE"});moveTo(each.address)}}
               >
                 {each.icon}

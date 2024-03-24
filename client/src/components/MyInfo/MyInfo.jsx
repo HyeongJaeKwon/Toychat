@@ -25,6 +25,7 @@ const MyInfo = ({ user }) => {
 
   const arr = [
     {
+      id: "mic",
       icon: !micMuted ? (
         <FaMicrophone style={{ width: "20px", height: "20px" }} />
       ) : (
@@ -36,6 +37,7 @@ const MyInfo = ({ user }) => {
       style: !micMuted ? {} : { color: "red" },
     },
     {
+      id: "headphone",
       icon: <TbHeadphonesOff style={{ width: "23px", height: "23px" }} />,
       function: () => {
         if (videoTrack !== null) {
@@ -45,6 +47,7 @@ const MyInfo = ({ user }) => {
       style: !camMuted ? {} : { color: "red" },
     },
     {
+      id: "settings",
       icon: <IoIosSettings style={{ width: "22px", height: "22px" }} />,
       function: () => {},
       style: {},
@@ -79,7 +82,12 @@ const MyInfo = ({ user }) => {
       </div>
       <div className="miOptions">
         {arr.map((each) => (
-          <div className="miOption" style={each.style} onClick={each.function}>
+          <div
+            className="miOption"
+            style={each.style}
+            onClick={each.function}
+            key={each.id}
+          >
             {each.icon}
           </div>
         ))}

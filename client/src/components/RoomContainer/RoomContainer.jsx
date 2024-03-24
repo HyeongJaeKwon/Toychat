@@ -5,12 +5,18 @@ import axios from "axios";
 import { ListContext } from "../../context/ListContext";
 import { ModalContext } from "../../context/ModalContext";
 
-const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
+const RoomContainer = ({ user, setUser }) => {
   const navigate = useNavigate();
   const { chatRoomList, dispatch } = useContext(ListContext);
   const location = useLocation();
   const roomid = location.pathname.split("/")[2];
-  const { isOpen, dispatch: modalDispatch } = useContext(ModalContext);
+  const {
+    isOpen,
+    mid,
+    mPosition,
+    mType,
+    dispatch: modalDispatch,
+  } = useContext(ModalContext);
 
   const moveToChat = (rid) => {
     if (isOpen) modalDispatch({ type: "CLOSE" });
@@ -20,7 +26,6 @@ const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
   const handleCall = (e) => {
     e.preventDefault();
     if (isOpen) modalDispatch({ type: "CLOSE" });
-    setMenuInfo((prev) => ({ ...prev, isOpen: false }));
   };
 
   const handleContextMenu = (event, roomid) => {
@@ -34,18 +39,11 @@ const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
         mType: "RoomContainer",
       },
     });
-    setMenuInfo({
-      isOpen: true,
-      mid: roomid,
-      mPosition: { x: event.clientX, y: event.clientY },
-      mType: "RoomContainer",
-    });
   };
 
   const handleClick = (e) => {
     e.preventDefault();
     if (isOpen) modalDispatch({ type: "CLOSE" });
-    setMenuInfo((prev) => ({ ...prev, isOpen: false }));
   };
 
   const handleDelete = (e) => {
@@ -53,13 +51,13 @@ const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
     console.log("handleDelete");
     const data = {
       user: user,
-      roomid: menuInfo.mid,
+      roomid: mid,
     };
     axios.delete("/api/v1/rooms", { data: data }).then((res) => {
       console.log("delete room res:", res);
       if (res.data) {
         setUser(res.data);
-        dispatch({ type: "DELETE_ROOM", payload: menuInfo.mid });
+        dispatch({ type: "DELETE_ROOM", payload: mid });
       } else {
         alert("Error happened during deletion. Please refresh the page");
       }
@@ -105,10 +103,10 @@ const RoomContainer = ({ user, setUser, menuInfo, setMenuInfo }) => {
           <div>No Chat</div>
         )}
 
-        {menuInfo.isOpen && menuInfo.mType === "RoomContainer" && (
+        {isOpen && mType === "RoomContainer" && (
           <div
             className="contextMenu"
-            style={{ top: menuInfo.mPosition.y, left: menuInfo.mPosition.x }}
+            style={{ top: mPosition.y, left: mPosition.x }}
           >
             <div className="contextMenuOption" onClick={handleCall}>
               Call

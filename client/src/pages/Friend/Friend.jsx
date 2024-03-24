@@ -1,14 +1,7 @@
-import { useNavigate } from "react-router-dom";
+
 import "./Friend.css";
 import { useEffect, useState } from "react";
-import useFetch from "../../hooks/useFetch.js";
-import axios from "axios";
-import socket from "../../server";
-import FriendSuggestion from "../../components/FriendSuggestion/FriendSuggestion";
-import FriendList from "../../components/FriendList/FriendList";
-import { FaUserFriends } from "react-icons/fa";
-import { GiSpeedBoat } from "react-icons/gi";
-import { AiFillShop } from "react-icons/ai";
+
 import Sidebar from "../../components/Sidebar/Sidebar";
 import FriendManagement from "./FriendManagement/FriendManagement";
 

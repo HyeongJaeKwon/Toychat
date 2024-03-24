@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import "./FTest.css";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 import socket from "../../server";
 import { IoChatbubbleSharp } from "react-icons/io5";
@@ -8,20 +8,28 @@ import { HiOutlineDotsVertical } from "react-icons/hi";
 import { FaCheck } from "react-icons/fa6";
 import { RxCross1 } from "react-icons/rx";
 import { FaPersonCirclePlus } from "react-icons/fa6";
+import { ModalContext } from "../../context/ModalContext";
 
 const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
   const [out, setOut] = useState(false);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const {
+    isOpen,
+    mid,
+    mPosition,
+    mType,
+    dispatch: modalDispatch,
+  } = useContext(ModalContext);
 
   const filteredUsers = friendList.filter((user) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const createRoom = (uid) => {
-    // console.log(menuInfo.mid)
+  const createRoom = (e, uid) => {
+    e.stopPropagation();
     const data = {
-      otheruid: uid === null ? menuInfo.mid : uid,
+      otheruid: uid === null ? mid : uid,
     };
     socket.emit("createRoom", data, (res) => {
       if (!res.ok) {
@@ -39,11 +47,14 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
       setOut(userInfo.out);
       console.log("Pending out :", userInfo.out.toString());
     }
-    setMenuInfo({
-      isOpen: true,
-      mid: uid,
-      mPosition: { x: event.clientX, y: event.clientY },
-      mType: type,
+    modalDispatch({
+      type: "CLICK",
+      payload: {
+        mid: uid,
+        x: event.clientX,
+        y: event.clientY,
+        mType: type,
+      },
     });
   };
 
@@ -53,11 +64,9 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
   };
 
   const DeleteFriend = (uid) => {
-    console.log("delete friend");
-
     closeMenuInfo();
 
-    socket.emit("deleteFriend", uid === null ? menuInfo.mid : uid, (res) => {
+    socket.emit("deleteFriend", uid === null ? mid : uid, (res) => {
       console.log("delete Friend", res.ok);
       if (!res.ok) {
         console.log(res.error);
@@ -65,12 +74,11 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
     });
   };
 
-  const AddFriend = (uid) => {
-    console.log("add friend");
-    // setMenu(false)
+  const AddFriend = (e, uid) => {
+    e.stopPropagation();
     closeMenuInfo();
 
-    socket.emit("addFriend", uid === null ? menuInfo.mid : uid, (res) => {
+    socket.emit("addFriend", uid === null ? mid : uid, (res) => {
       console.log("add Friend", res.ok);
       if (!res.ok) {
         console.log(res.error);
@@ -78,10 +86,10 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
     });
   };
 
-  const AddPending = (uid) => {
-    console.log("Add pending");
+  const AddPending = (e, uid) => {
+    e.stopPropagation();
     closeMenuInfo();
-    socket.emit("addPending", uid === null ? menuInfo.mid : uid, (res) => {
+    socket.emit("addPending", uid === null ? mid : uid, (res) => {
       console.log("add Pending", res.ok);
       if (!res.ok) {
         console.log(res.error);
@@ -89,12 +97,11 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
     });
   };
 
-  const DeletePending = (uid) => {
-    console.log("DeletePending");
-
+  const DeletePending = (e, uid) => {
+    e.stopPropagation();
     closeMenuInfo();
 
-    socket.emit("deletePending", uid === null ? menuInfo.mid : uid, (res) => {
+    socket.emit("deletePending", uid === null ? mid : uid, (res) => {
       console.log("se deletePending: ", res.ok.toString());
       if (!res.ok) {
         console.log(res.error);
@@ -103,13 +110,12 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
   };
 
   const closeMenuInfo = () => {
-    setMenuInfo((prev) => ({ ...prev, isOpen: false }));
+    if (isOpen) modalDispatch({ type: "CLOSE" });
   };
 
   const Block = (uid) => {
-    console.log("Block");
     closeMenuInfo();
-    socket.emit("block", uid === null ? menuInfo.mid : uid, (res) => {
+    socket.emit("block", uid === null ? mid : uid, (res) => {
       console.log("block", res.ok.toString());
       if (!res.ok) {
         console.log(res.error);
@@ -117,10 +123,10 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
     });
   };
 
-  const Unblock = (uid) => {
-    console.log("Unblock");
+  const Unblock = (e, uid) => {
+    e.stopPropagation();
     closeMenuInfo();
-    socket.emit("unblock", uid === null ? menuInfo.mid : uid, (res) => {
+    socket.emit("unblock", uid === null ? mid : uid, (res) => {
       console.log("unblock", res.ok.toString());
       if (!res.ok) {
         console.log(res.error);
@@ -151,12 +157,10 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
       ) : type === "Blocked" ? (
         <div className="flOnline">BLOCKED - {friendList.length}</div>
       ) : (
-        <div className="flOnline">
-          PENDING - {friendList.length}
-        </div>
+        <div className="flOnline">PENDING - {friendList.length}</div>
       )}
 
-      <div className="flLine"></div>
+      <div className="flLine" />
       <div className="flScroll">
         <div className="flFriend">
           {friendList.length === 0
@@ -167,7 +171,7 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
                   <div
                     className="flSideItem"
                     onContextMenu={(e) => handleContextMenu(e, each._id, each)}
-                    onClick={()=>createRoom(each._id)}
+                    onClick={(e) => createRoom(e, each._id)}
                     key={each._id.toString()}
                   >
                     <div className="flSideProfile">
@@ -199,8 +203,8 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
                         <>
                           <div
                             className="flMore"
-                            onClick={() => {
-                              createRoom(each._id);
+                            onClick={(e) => {
+                              createRoom(e, each._id);
                             }}
                           >
                             <IoChatbubbleSharp />
@@ -213,7 +217,7 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
                         <>
                           <div
                             className="flMore"
-                            onClick={() => AddPending(each._id)}
+                            onClick={(e) => AddPending(e, each._id)}
                           >
                             <FaCheck />
                           </div>
@@ -225,7 +229,7 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
                         <>
                           <div
                             className="flMore"
-                            onClick={() => Unblock(each._id)}
+                            onClick={(e) => Unblock(e, each._id)}
                           >
                             <FaPersonCirclePlus />
                           </div>
@@ -235,13 +239,15 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
                           {!each.out && (
                             <div
                               className="flMore"
-                              onClick={() => AddFriend(each._id)}
+                              onClick={(e) => AddFriend(e, each._id)}
                             >
                               <FaCheck />
                             </div>
                           )}
                           <div className="flMore">
-                            <RxCross1 onClick={() => DeletePending(each._id)} />
+                            <RxCross1
+                              onClick={(e) => DeletePending(e, each._id)}
+                            />
                           </div>
                         </>
                       ) : (
@@ -298,25 +304,25 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
                 );
               })}
 
-          {menuInfo.isOpen &&
-            ((menuInfo.mType === "All" && type == "All") ||
-              (menuInfo.mType === "Online" && type == "Online")) && (
+          {isOpen &&
+            ((mType === "All" && type == "All") ||
+              (mType === "Online" && type == "Online")) && (
               <div
                 className="contextMenu"
                 style={{
-                  top: menuInfo.mPosition.y,
-                  left: menuInfo.mPosition.x,
+                  top: mPosition.y,
+                  left: mPosition.x,
                 }}
               >
                 <div
                   className="contextMenuOption"
-                  onClick={() => DeleteFriend(null)}
+                  onClick={(e) => DeleteFriend(e, null)}
                 >
                   Delete Friend
                 </div>
                 <div
                   className="contextMenuOption"
-                  onClick={() => createRoom(null)}
+                  onClick={(e) => createRoom(e, null)}
                 >
                   Send Message
                 </div>
@@ -329,104 +335,98 @@ const FTest = ({ menuInfo, setMenuInfo, friendList, setFriendList, type }) => {
               </div>
             )}
 
-          {menuInfo.isOpen &&
-            menuInfo.mType === "Blocked" &&
-            type === "Blocked" && (
+          {isOpen && mType === "Blocked" && type === "Blocked" && (
+            <div
+              className="contextMenu"
+              style={{
+                top: mPosition.y,
+                left: mPosition.x,
+              }}
+            >
               <div
-                className="contextMenu"
-                style={{
-                  top: menuInfo.mPosition.y,
-                  left: menuInfo.mPosition.x,
-                }}
+                className="contextMenuOption"
+                onClick={(e) => Unblock(e, null)}
               >
-                <div
-                  className="contextMenuOption"
-                  onClick={() => Unblock(null)}
-                >
-                  Unblock
-                </div>
-                <div
-                  className="contextMenuOption"
-                  onClick={() => createRoom(null)}
-                >
-                  Send Message
-                </div>
-                <div className="contextMenuOption" onClick={handleClick}>
-                  Close
-                </div>
+                Unblock
               </div>
-            )}
+              <div
+                className="contextMenuOption"
+                onClick={(e) => createRoom(e, null)}
+              >
+                Send Message
+              </div>
+              <div className="contextMenuOption" onClick={handleClick}>
+                Close
+              </div>
+            </div>
+          )}
 
-          {menuInfo.isOpen &&
-            menuInfo.mType === "Suggestions" &&
-            type === "Suggestions" && (
+          {isOpen && mType === "Suggestions" && type === "Suggestions" && (
+            <div
+              className="contextMenu"
+              style={{
+                top: mPosition.y,
+                left: mPosition.x,
+              }}
+            >
               <div
-                className="contextMenu"
-                style={{
-                  top: menuInfo.mPosition.y,
-                  left: menuInfo.mPosition.x,
-                }}
+                className="contextMenuOption"
+                onClick={(e) => AddPending(e, null)}
               >
-                <div
-                  className="contextMenuOption"
-                  onClick={() => AddPending(null)}
-                >
-                  Friend Request
-                </div>
-                <div
-                  className="contextMenuOption"
-                  onClick={() => createRoom(null)}
-                >
-                  Send Message
-                </div>
-                <div className="contextMenuOption" onClick={() => Block(null)}>
-                  Block
-                </div>
-                <div className="contextMenuOption" onClick={handleClick}>
-                  Close
-                </div>
+                Friend Request
               </div>
-            )}
+              <div
+                className="contextMenuOption"
+                onClick={(e) => createRoom(e, null)}
+              >
+                Send Message
+              </div>
+              <div className="contextMenuOption" onClick={() => Block(null)}>
+                Block
+              </div>
+              <div className="contextMenuOption" onClick={handleClick}>
+                Close
+              </div>
+            </div>
+          )}
 
-          {menuInfo.isOpen &&
-            menuInfo.mType === "Pending" &&
-            type === "Pending" && (
-              <div
-                className="contextMenu"
-                style={{
-                  top: menuInfo.mPosition.y,
-                  left: menuInfo.mPosition.x,
-                }}
-              >
-                {out ? (
-                  <div
-                    className="contextMenuOption"
-                    onClick={() => DeletePending(null)}
-                  >
-                    Cancel Request
-                  </div>
-                ) : (
-                  <div
-                    className="contextMenuOption"
-                    onClick={() => AddFriend(null)}
-                  >
-                    Add Friend
-                  </div>
-                )}
+          {isOpen && mType === "Pending" && type === "Pending" && (
+            <div
+              className="contextMenu"
+              style={{
+                top: mPosition.y,
+                left: mPosition.x,
+              }}
+            >
+              {out ? (
                 <div
                   className="contextMenuOption"
-                  onClick={() => createRoom(null)}
+                  onClick={(e) => DeletePending(e, null)}
                 >
-                  Send Message
+                  Cancel Request
                 </div>
-                <div className="contextMenuOption" onClick={() => Block(null)}>
-                  Block
+              ) : (
+                <div
+                  className="contextMenuOption"
+                  onClick={(e) => AddFriend(e, null)}
+                >
+                  Add Friend
                 </div>
-                <div className="contextMenuOption" onClick={handleClick}>
-                  Close
-                </div>
+              )}
+              <div
+                className="contextMenuOption"
+                onClick={(e) => createRoom(e, null)}
+              >
+                Send Message
               </div>
-            )}
+              <div className="contextMenuOption" onClick={() => Block(null)}>
+                Block
+              </div>
+              <div className="contextMenuOption" onClick={handleClick}>
+                Close
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

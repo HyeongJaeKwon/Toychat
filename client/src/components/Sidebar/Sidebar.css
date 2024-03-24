@@ -122,3 +122,20 @@
   color: whitesmoke;
   margin-left: auto;
 }
+
+.sbSideItem{
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  padding: 5px;
+  justify-content: start;
+  border-radius: 5px;
+  margin: 1px 0px;
+  color: rgb(181, 181, 181);
+  cursor: pointer;
+
+}
+
+.sbSideItem:hover{
+  background-color: rgb(88, 88, 88);
+}

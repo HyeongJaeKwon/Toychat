@@ -1,10 +1,7 @@
 import { useContext, useEffect, useState } from "react";
-import FriendList from "../../../components/FriendList/FriendList";
-import FriendSuggestion from "../../../components/FriendSuggestion/FriendSuggestion";
 import "./FriendManagement.css";
 import { FaUserFriends } from "react-icons/fa";
 import FTest from "../../../components/FTEST/FTest";
-import socket from "../../../server";
 import axios from "axios";
 import AddFriend from "../../../components/AddFriend/AddFriend";
 import { ListContext } from "../../../context/ListContext";

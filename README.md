@@ -11,3 +11,4 @@
 3/19/2024 - Constructing CallContext 98% done => tmr finish it + minor button details \
 3/20/2024 - Socket Done. Fully Functioning, Getting quite busy with internships\ 
 3/22/2024 - Creating ModalContext 
+3/23/2024 - ModalContext creation done => tmr need to add details of ModalContext

@@ -143,6 +143,7 @@ userController.deletePending = async (myuid, otheruid) => {
 userController.addBlocked = async (myuid, otheruid) => {
   try {
     await userController.deleteFriend(myuid, otheruid )
+    await userController.deletePending(myuid, otheruid)
     const myuser = await User.findByIdAndUpdate(
       myuid,
       { $push: { blocked: otheruid } },
