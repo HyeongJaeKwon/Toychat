@@ -31,9 +31,9 @@ chatController.getAllChatsByRoomid = async (roomid) => {
 /**Update Chat */
 chatController.updateChat = async (cid, chatdata) => {
   try {
-    const updatedChat = await User.findByIdAndUpdate(
+    const updatedChat = await Chat.findByIdAndUpdate(
       cid,
-      { $set: userdata },
+      { $set: chatdata },
       { new: true }
     );
     return updatedChat;
